@@ -13,26 +13,29 @@
         input, select, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
         button.btn { width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-bottom: 8px; }
         button.btn-cetak { width: 100%; padding: 10px; background: #475569; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 6px; }
+        button.btn-backup { width: 100%; padding: 10px; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 6px; }
         .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
-        .menu-btn { padding: 12px; background: white; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: bold; text-align: center; cursor: pointer; color: var(--primary); }
+        .menu-btn { padding: 12px; background: white; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: bold; text-align: center; cursor: pointer; color: var(--primary); font-size: 13px; }
         .menu-btn.aktif { background: var(--primary); color: white; }
         .panel { display: none; }
         .panel.aktif { display: block; }
+        .item-list { font-size: 13px; border-bottom: 1px solid #e2e8f0; padding: 6px 0; }
     </style>
 </head>
 <body>
 
     <header>
         <h2 style="color: white; border: none; margin: 0;">🪑 Pusat Aplikasi Toko</h2>
-        <p style="margin: 4px 0 0; font-size: 0.8rem;">Semua Fitur Bisnis & Hiburan dalam 1 Layar</p>
+        <p style="margin: 4px 0 0; font-size: 0.8rem;">Kasir, Kredit, Kalkulator & Hiburan</p>
     </header>
 
     <!-- Menu Navigasi Grid -->
     <div class="menu-grid">
         <div class="menu-btn aktif" onclick="gantiAplikasi('bukukas')">📦 Buku Kas</div>
+        <div class="menu-btn" onclick="gantiAplikasi('kredit')">📋 Catat Kredit</div>
         <div class="menu-btn" onclick="gantiAplikasi('kalkulator')">🧮 Kalkulator</div>
-        <div class="menu-btn" onclick="gantiAplikasi('generator')">🎬 Generator Konten</div>
-        <div class="menu-btn" onclick="gantiAplikasi('kuis')">🎮 Kuis Interaktif</div>
+        <div class="menu-btn" onclick="gantiAplikasi('generator')">🎬 Skrip Konten</div>
+        <div class="menu-btn" onclick="gantiAplikasi('kuis')">🎮 Kuis Toko</div>
     </div>
 
     <!-- 1. Panel Buku Kas & Cetak Nota -->
@@ -41,7 +44,7 @@
             <h2>Catat Transaksi Kas</h2>
             <select id="jenis-kas">
                 <option value="Uang Masuk (Penjualan)">Uang Masuk (Penjualan)</option>
-                <option value="Pengeluaran (Cth: Jual Beli Piring)">Pengeluaran (Cth: Jual Beli Piring)</option>
+                <option value="Pengeluaran (Operasional)">Pengeluaran (Operasional)</option>
             </select>
             <input type="text" id="ket-kas" placeholder="Keterangan Barang (Cth: Lemari Plastik)">
             <input type="number" id="nominal-kas" placeholder="Jumlah Nominal (Rp)">
@@ -50,12 +53,30 @@
 
         <div class="card">
             <h2>Riwayat Kas & Nota</h2>
-            <div id="riwayat-kas" style="font-size: 13px; min-height: 50px;">Belum ada catatan.</div>
+            <div id="riwayat-kas" style="font-size: 13px; min-height: 50px; margin-bottom: 8px;">Belum ada catatan.</div>
             <button class="btn-cetak" onclick="cetakNota()">🖨️ Cetak Struk Nota</button>
+            <button class="btn-backup" onclick="backupDataDrive()">☁️ Backup Data (Simpan File)</button>
         </div>
     </div>
 
-    <!-- 2. Panel Kalkulator Profit Margin -->
+    <!-- 2. Panel Catat Kredit & Tagihan -->
+    <div id="panel-kredit" class="panel">
+        <div class="card">
+            <h2>Catat Kredit / Cicilan Pelanggan</h2>
+            <input type="text" id="nama-kredit" placeholder="Nama Pelanggan">
+            <input type="text" id="barang-kredit" placeholder="Nama Barang (Cth: Kasur Busa)">
+            <input type="number" id="sisa-kredit" placeholder="Sisa Tagihan / Total (Rp)">
+            <input type="text" id="tempo-kredit" placeholder="Jatuh Tempo (Cth: 25 November)">
+            <button class="btn" onclick="simpanKredit()">📥 Simpan Data Kredit</button>
+        </div>
+
+        <div class="card">
+            <h2>Daftar Tagihan Kredit Aktif</h2>
+            <div id="riwayat-kredit" style="font-size: 13px; min-height: 50px;">Belum ada data kredit.</div>
+        </div>
+    </div>
+
+    <!-- 3. Panel Kalkulator Profit Margin -->
     <div id="panel-kalkulator" class="panel">
         <div class="card">
             <h2>Kalkulator Margin Perabot</h2>
@@ -66,7 +87,7 @@
         </div>
     </div>
 
-    <!-- 3. Panel Generator Skrip TikTok -->
+    <!-- 4. Panel Generator Skrip TikTok -->
     <div id="panel-generator" class="panel">
         <div class="card">
             <h2>Generator Skrip TikTok Perabot</h2>
@@ -77,7 +98,7 @@
         </div>
     </div>
 
-    <!-- 4. Panel Kuis Interaktif -->
+    <!-- 5. Panel Kuis Interaktif -->
     <div id="panel-kuis" class="panel">
         <div class="card">
             <h2>Kuis Seputar Usaha Toko</h2>
@@ -89,6 +110,15 @@
     </div>
 
     <script>
+        // Memuat Data Tersimpan saat Aplikasi Dibuka
+        let dataTransaksi = JSON.parse(localStorage.getItem('toko_kas')) || [];
+        let dataKredit = JSON.parse(localStorage.getItem('toko_kredit')) || [];
+
+        window.onload = function() {
+            tampilkanKas();
+            tampilkanKredit();
+        };
+
         // Navigasi Antar Menu
         function gantiAplikasi(target) {
             document.querySelectorAll('.panel').forEach(p => p.classList.remove('aktif'));
@@ -99,7 +129,6 @@
         }
 
         // Fitur Kas & Cetak Nota
-        let dataTransaksi = [];
         function simpanKas() {
             let jenis = document.getElementById('jenis-kas').value;
             let ket = document.getElementById('ket-kas').value || 'Tanpa Keterangan';
@@ -112,10 +141,26 @@
 
             let teksItem = `• [${jenis}] ${ket} - Rp ${Number(nominal).toLocaleString('id-ID')}`;
             dataTransaksi.push(teksItem);
+            localStorage.setItem('toko_kas', JSON.stringify(dataTransaksi));
 
-            document.getElementById('riwayat-kas').innerHTML = dataTransaksi.join('<br>');
+            tampilkanKas();
             document.getElementById('ket-kas').value = '';
             document.getElementById('nominal-kas').value = '';
+        }
+
+        function tampilkanKas() {
+            let riwayat = document.getElementById('riwayat-kas');
+            if(dataTransaksi.length === 0) {
+                riwayat.innerHTML = 'Belum ada catatan.';
+            } else {
+                riwayat.innerHTML = dataTransaksi.map((item, idx) => `<div class="item-list">${item} <button style="float:right; background:#dc2626; color:white; border:none; padding:2px 6px; border-radius:4px; cursor:pointer;" onclick="hapusKas(${idx})">Hapus</button></div>`).join('');
+            }
+        }
+
+        function hapusKas(idx) {
+            dataTransaksi.splice(idx, 1);
+            localStorage.setItem('toko_kas', JSON.stringify(dataTransaksi));
+            tampilkanKas();
         }
 
         function cetakNota() {
@@ -127,7 +172,7 @@
             let areaCetak = document.getElementById('riwayat-kas').innerHTML;
             let jendelaCetak = window.open('', '', 'width=400,height=600');
             jendelaCetak.document.write('<html><head><title>Struk Belanja Toko Perabot</title>');
-            jendelaCetak.document.write('<style>body { font-family: sans-serif; padding: 20px; font-size: 14px; }</style>');
+            jendelaCetak.document.write('<style>body { font-family: sans-serif; padding: 20px; font-size: 14px; } button { display:none; }</style>');
             jendelaCetak.document.write('</head><body>');
             jendelaCetak.document.write('<h3 style="text-align:center; margin-bottom:0;">STRUK TRANSAKSI</h3>');
             jendelaCetak.document.write('<p style="text-align:center; margin-top:4px;">Toko Perabot Rumah Tangga</p>');
@@ -143,6 +188,68 @@
                 jendelaCetak.print();
                 jendelaCetak.close();
             }, 500);
+        }
+
+        // Fitur Backup Data ke File (Bisa di-upload ke Google Drive)
+        function backupDataDrive() {
+            let backupObj = {
+                kas: dataTransaksi,
+                kredit: dataKredit,
+                tanggal: new Date().toLocaleString()
+            };
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj));
+            let downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "backup_data_toko_perabot.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            alert('File backup berhasil diunduh! File ini bisa disimpan ke Google Drive Anda.');
+        }
+
+        // Fitur Catat Kredit / Cicilan
+        function simpanKredit() {
+            let nama = document.getElementById('nama-kredit').value;
+            let barang = document.getElementById('barang-kredit').value;
+            let sisa = document.getElementById('sisa-kredit').value;
+            let tempo = document.getElementById('tempo-kredit').value;
+
+            if(!nama || !sisa) {
+                alert('Nama dan nominal sisa tagihan wajib diisi!');
+                return;
+            }
+
+            let infoKredit = { nama, barang: barang || 'Perabot', sisa: Number(sisa), tempo: tempo || 'Belum ditentukan' };
+            dataKredit.push(infoKredit);
+            localStorage.setItem('toko_kredit', JSON.stringify(dataKredit));
+
+            tampilkanKredit();
+            document.getElementById('nama-kredit').value = '';
+            document.getElementById('barang-kredit').value = '';
+            document.getElementById('sisa-kredit').value = '';
+            document.getElementById('tempo-kredit').value = '';
+        }
+
+        function tampilkanKredit() {
+            let riwayat = document.getElementById('riwayat-kredit');
+            if(dataKredit.length === 0) {
+                riwayat.innerHTML = 'Belum ada data kredit.';
+            } else {
+                riwayat.innerHTML = dataKredit.map((k, idx) => `
+                    <div class="item-list" style="margin-bottom:6px; background:#f1f5f9; padding:8px; border-radius:4px;">
+                        <b>👤 ${k.nama}</b> (${k.barang})<br>
+                        Sisa Tagihan: <b>Rp ${k.sisa.toLocaleString('id-ID')}</b><br>
+                        Jatuh Tempo: ${k.tempo}
+                        <br><button style="margin-top:4px; background:#dc2626; color:white; border:none; padding:2px 6px; border-radius:4px; cursor:pointer;" onclick="hapusKredit(${idx})>Lunas / Hapus</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function hapusKredit(idx) {
+            dataKredit.splice(idx, 1);
+            localStorage.setItem('toko_kredit', JSON.stringify(dataKredit));
+            tampilkanKredit();
         }
 
         // Kalkulator Profit
@@ -175,7 +282,7 @@
         // Kuis Interaktif
         const soalKuis = [
             { tanya: "Bahasa pemrograman web untuk kerangka halaman adalah?", opsi: ["CSS", "HTML", "JavaScript"], jawaban: 1 },
-            { tanya: "Penyimpanan data lokal di browser disebut...", opsi: ["Penyimpanan lokal", "Google Drive", "Bluetooth"], jawaban: 0 },
+            { tanya: "Penyimpanan data lokal di browser disebut...", opsi: ["LocalStorage", "Google Drive", "Bluetooth"], jawaban: 0 },
             { tanya: "Aplikasi editor koding HP yang kita pakai adalah...", opsi: ["CapCut", "Editor Spck", "Kling AI"], jawaban: 1 }
         ];
         let idxSoal = 0, skorKuis = 0, sudahJawabKuis = false;
