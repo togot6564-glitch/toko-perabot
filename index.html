@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -14,25 +15,26 @@
         button.btn { width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-bottom: 8px; }
         button.btn-cetak { width: 100%; padding: 10px; background: #475569; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 6px; }
         button.btn-backup { width: 100%; padding: 10px; background: #16a34a; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 6px; }
+        button.btn-wa { background: #25d366; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 12px; margin-top: 4px; }
         .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
         .menu-btn { padding: 12px; background: white; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: bold; text-align: center; cursor: pointer; color: var(--primary); font-size: 13px; }
         .menu-btn.aktif { background: var(--primary); color: white; }
         .panel { display: none; }
         .panel.aktif { display: block; }
-        .item-list { font-size: 13px; border-bottom: 1px solid #e2e8f0; padding: 6px 0; }
+        .item-list { font-size: 13px; border-bottom: 1px solid #e2e8f0; padding: 8px 0; }
     </style>
 </head>
 <body>
 
     <header>
         <h2 style="color: white; border: none; margin: 0;">🪑 Pusat Aplikasi Toko</h2>
-        <p style="margin: 4px 0 0; font-size: 0.8rem;">Kasir, Kredit, Kalkulator & Hiburan</p>
+        <p style="margin: 4px 0 0; font-size: 0.8rem;">Kasir, Cicilan Kredit, Kalkulator & Hiburan</p>
     </header>
 
     <!-- Menu Navigasi Grid -->
     <div class="menu-grid">
         <div class="menu-btn aktif" onclick="gantiAplikasi('bukukas')">📦 Buku Kas</div>
-        <div class="menu-btn" onclick="gantiAplikasi('kredit')">📋 Catat Kredit</div>
+        <div class="menu-btn" onclick="gantiAplikasi('kredit')">📋 Cicilan Kredit</div>
         <div class="menu-btn" onclick="gantiAplikasi('kalkulator')">🧮 Kalkulator</div>
         <div class="menu-btn" onclick="gantiAplikasi('generator')">🎬 Skrip Konten</div>
         <div class="menu-btn" onclick="gantiAplikasi('kuis')">🎮 Kuis Toko</div>
@@ -55,23 +57,24 @@
             <h2>Riwayat Kas & Nota</h2>
             <div id="riwayat-kas" style="font-size: 13px; min-height: 50px; margin-bottom: 8px;">Belum ada catatan.</div>
             <button class="btn-cetak" onclick="cetakNota()">🖨️ Cetak Struk Nota</button>
-            <button class="btn-backup" onclick="backupDataDrive()">☁️ Backup Data (Simpan File)</button>
+            <button class="btn-backup" onclick="backupDataDrive()">☁️ Backup Data (Simpan ke HP/Laptop)</button>
         </div>
     </div>
 
-    <!-- 2. Panel Catat Kredit & Tagihan -->
+    <!-- 2. Panel Catat Kredit & Cicilan -->
     <div id="panel-kredit" class="panel">
         <div class="card">
-            <h2>Catat Kredit / Cicilan Pelanggan</h2>
+            <h2>Catat Cicilan / Kredit Pelanggan</h2>
             <input type="text" id="nama-kredit" placeholder="Nama Pelanggan">
-            <input type="text" id="barang-kredit" placeholder="Nama Barang (Cth: Kasur Busa)">
-            <input type="number" id="sisa-kredit" placeholder="Sisa Tagihan / Total (Rp)">
-            <input type="text" id="tempo-kredit" placeholder="Jatuh Tempo (Cth: 25 November)">
-            <button class="btn" onclick="simpanKredit()">📥 Simpan Data Kredit</button>
+            <input type="text" id="wa-kredit" placeholder="Nomor WhatsApp (Cth: 08123456789)">
+            <input type="text" id="barang-kredit" placeholder="Nama Barang (Cth: Lemari Pakaian)">
+            <input type="number" id="total-kredit" placeholder="Total Harga / Sisa Cicilan (Rp)">
+            <input type="text" id="tempo-kredit" placeholder="Jatuh Tempo / Keterangan Cicilan (Cth: Cicilan ke-1)">
+            <button class="btn" onclick="simpanKredit()">📥 Simpan Data Cicilan</button>
         </div>
 
         <div class="card">
-            <h2>Daftar Tagihan Kredit Aktif</h2>
+            <h2>Daftar Buku Tagihan Kredit</h2>
             <div id="riwayat-kredit" style="font-size: 13px; min-height: 50px;">Belum ada data kredit.</div>
         </div>
     </div>
@@ -110,7 +113,6 @@
     </div>
 
     <script>
-        // Memuat Data Tersimpan saat Aplikasi Dibuka
         let dataTransaksi = JSON.parse(localStorage.getItem('toko_kas')) || [];
         let dataKredit = JSON.parse(localStorage.getItem('toko_kredit')) || [];
 
@@ -119,7 +121,6 @@
             tampilkanKredit();
         };
 
-        // Navigasi Antar Menu
         function gantiAplikasi(target) {
             document.querySelectorAll('.panel').forEach(p => p.classList.remove('aktif'));
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('aktif'));
@@ -128,7 +129,6 @@
             event.currentTarget.classList.add('aktif');
         }
 
-        // Fitur Kas & Cetak Nota
         function simpanKas() {
             let jenis = document.getElementById('jenis-kas').value;
             let ket = document.getElementById('ket-kas').value || 'Tanpa Keterangan';
@@ -190,7 +190,6 @@
             }, 500);
         }
 
-        // Fitur Backup Data ke File (Bisa di-upload ke Google Drive)
         function backupDataDrive() {
             let backupObj = {
                 kas: dataTransaksi,
@@ -204,45 +203,54 @@
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
-            alert('File backup berhasil diunduh! File ini bisa disimpan ke Google Drive Anda.');
+            alert('File backup berhasil diunduh! Silakan simpan file ini ke Google Drive Anda.');
         }
 
-        // Fitur Catat Kredit / Cicilan
         function simpanKredit() {
             let nama = document.getElementById('nama-kredit').value;
+            let wa = document.getElementById('wa-kredit').value;
             let barang = document.getElementById('barang-kredit').value;
-            let sisa = document.getElementById('sisa-kredit').value;
+            let total = document.getElementById('total-kredit').value;
             let tempo = document.getElementById('tempo-kredit').value;
 
-            if(!nama || !sisa) {
-                alert('Nama dan nominal sisa tagihan wajib diisi!');
+            if(!nama || !total) {
+                alert('Nama pelanggan dan jumlah nominal wajib diisi!');
                 return;
             }
 
-            let infoKredit = { nama, barang: barang || 'Perabot', sisa: Number(sisa), tempo: tempo || 'Belum ditentukan' };
+            let infoKredit = { nama, wa: wa || '', barang: barang || 'Perabot', total: Number(total), tempo: tempo || 'Cicilan' };
             dataKredit.push(infoKredit);
             localStorage.setItem('toko_kredit', JSON.stringify(dataKredit));
 
             tampilkanKredit();
             document.getElementById('nama-kredit').value = '';
+            document.getElementById('wa-kredit').value = '';
             document.getElementById('barang-kredit').value = '';
-            document.getElementById('sisa-kredit').value = '';
+            document.getElementById('total-kredit').value = '';
             document.getElementById('tempo-kredit').value = '';
         }
 
         function tampilkanKredit() {
             let riwayat = document.getElementById('riwayat-kredit');
             if(dataKredit.length === 0) {
-                riwayat.innerHTML = 'Belum ada data kredit.';
+                riwayat.innerHTML = 'Belum ada data cicilan kredit.';
             } else {
-                riwayat.innerHTML = dataKredit.map((k, idx) => `
-                    <div class="item-list" style="margin-bottom:6px; background:#f1f5f9; padding:8px; border-radius:4px;">
-                        <b>👤 ${k.nama}</b> (${k.barang})<br>
-                        Sisa Tagihan: <b>Rp ${k.sisa.toLocaleString('id-ID')}</b><br>
-                        Jatuh Tempo: ${k.tempo}
-                        <br><button style="margin-top:4px; background:#dc2626; color:white; border:none; padding:2px 6px; border-radius:4px; cursor:pointer;" onclick="hapusKredit(${idx})>Lunas / Hapus</button>
-                    </div>
-                `).join('');
+                riwayat.innerHTML = dataKredit.map((k, idx) => {
+                    let formatWa = k.wa.replace(/^0/, '62');
+                    let pesanWa = `Halo Kak ${k.nama}, pengingat cicilan/tagihan untuk pembelian ${k.barang} sebesar Rp ${k.kredit ? k.kredit.toLocaleString('id-ID') : k.total.toLocaleString('id-ID')}. Terima kasih!`;
+                    let linkWa = k.wa ? `<br><a href="https://wa.me/${formatWa}?text=${encodeURIComponent(pesanWa)}" target="_blank"><button class="btn-wa">💬 Hubungi via WA</button></a>` : '';
+                    
+                    return `
+                        <div class="item-list" style="margin-bottom:8px; background:#f1f5f9; padding:10px; border-radius:6px;">
+                            <b>👤 ${k.nama}</b> ${k.wa ? '('+k.wa+')' : ''}<br>
+                            Barang: ${k.barang}<br>
+                            Sisa Tagihan: <b>Rp ${k.total.toLocaleString('id-ID')}</b><br>
+                            Keterangan: ${k.tempo}
+                            ${linkWa}
+                            <br><button style="margin-top:6px; background:#dc2626; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick="hapusKredit(${idx})">✅ Lunas / Hapus</button>
+                        </div>
+                    `;
+                }).join('');
             }
         }
 
@@ -252,7 +260,6 @@
             tampilkanKredit();
         }
 
-        // Kalkulator Profit
         function hitungProfit() {
             let modal = Number(document.getElementById('modal-barang').value);
             let jual = Number(document.getElementById('jual-barang').value);
@@ -268,7 +275,6 @@
             hasil.innerHTML = `Keuntungan: Rp ${untung.toLocaleString('id-ID')} (${persentase}%)`;
         }
 
-        // Generator Skrip TikTok
         function buatSkrip() {
             let produk = document.getElementById('gen-produk').value || 'Produk Toko';
             let keunggulan = document.getElementById('gen-keunggulan').value || 'Berkualitas';
@@ -279,7 +285,6 @@
                               `<b>Call to Action:</b><br>"Yuk diorder sebelum kehabisan, cek link di bio ya!"`;
         }
 
-        // Kuis Interaktif
         const soalKuis = [
             { tanya: "Bahasa pemrograman web untuk kerangka halaman adalah?", opsi: ["CSS", "HTML", "JavaScript"], jawaban: 1 },
             { tanya: "Penyimpanan data lokal di browser disebut...", opsi: ["LocalStorage", "Google Drive", "Bluetooth"], jawaban: 0 },
@@ -325,3 +330,4 @@
     </script>
 </body>
 </html>
+     
