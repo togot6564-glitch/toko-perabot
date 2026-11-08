@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pusat Aplikasi Toko Perabot</title>
+    <style>
+        :root { --primary: #0284c7; --success: #16a34a; --danger: #dc2626; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; }
+        body { font-family: sans-serif; background: var(--bg); padding: 12px; margin: 0; color: var(--text); max-width: 600px; margin: 0 auto; box-sizing: border-box; }
+        header { text-align: center; margin-bottom: 12px; padding: 12px; background: var(--primary); color: white; border-radius: 8px; }
+        .card { background: var(--card); padding: 14px; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        h2 { color: var(--primary); font-size: 1.1rem; margin-bottom: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-top: 0; }
+        input, select, textarea { width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; box-sizing: border-box; display: block; background: white; }
+        button.btn { width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 4px; display: block; font-size: 0.95rem; }
+        
+        /* Menu Navigasi Grid */
+        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+        .menu-btn { padding: 12px; background: white; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer; text-align: center; color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .menu-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* Tampilan Aplikasi */
+        .app-section { display: none; }
+        .app-section.active { display: block; }
+        
+        .saldo-box { display: flex; justify-content: space-between; gap: 6px; margin-bottom: 10px; }
+        .saldo-card { flex: 1; padding: 8px; border-radius: 6px; color: white; text-align: center; font-size: 0.75rem; }
+        .bg-masuk { background: var(--success); }
+        .bg-keluar { background: var(--danger); }
+        .bg-total { background: var(--primary); }
+        
+        .transaksi-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem; }
+        .btn-hapus { background: #fee2e2; color: var(--danger); border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; }
+        
+        .question-text { font-size: 1rem; font-weight: bold; margin-bottom: 12px; text-align: center; color: #334155; }
+        button.btn-opsi { width: 100%; padding: 10px; background: #f1f5f9; color: var(--text); border: 1px solid #cbd5e1; border-radius: 6px; font-weight: bold; cursor: pointer; margin-bottom: 6px; display: block; text-align: left; font-size: 0.9rem; }
+        button.btn-opsi.benar { background: #dcfce7; color: var(--success); border-color: var(--success); }
+        button.btn-opsi.salah { background: #fee2e2; color: var(--danger); border-color: var(--danger); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2 style="color: white; border: none; margin: 0;">🏪 Pusat Aplikasi Toko</h2>
+        <p style="font-size: 0.8rem; margin: 4px 0 0 0;">Semua Fitur Bisnis & Hiburan dalam 1 Layar</p>
+    </header>
+
+    <!-- Menu Pilihan Aplikasi -->
+    <div class="menu-grid">
+        <button class="menu-btn active" onclick="gantiAplikasi('bukuKas')">📒 Buku Kas</button>
+        <button class="menu-btn" onclick="gantiAplikasi('kalkulator')">🧮 Kalkulator</button>
+        <button class="menu-btn" onclick="gantiAplikasi('generator')">🎬 Generator Konten</button>
+        <button class="menu-btn" onclick="gantiAplikasi('kuis')">❓ Kuis Interaktif</button>
+        <button class="menu-btn" onclick="gantiAplikasi('tebakAngka')" style="grid-column: span 2;">🎯 Game Tebak Angka</button>
+    </div>
+
+    <!-- 1. APLIKASI BUKU KAS -->
+    <div id="app-bukuKas" class="app-section active">
+        <div class="saldo-box">
+            <div class="saldo-card bg-masuk"><div>Masuk</div><strong id="label-masuk">Rp 0</strong></div>
+            <div class="saldo-card bg-keluar"><div>Keluar</div><strong id="label-keluar">Rp 0</strong></div>
+            <div class="saldo-card bg-total"><div>Saldo</div><strong id="label-saldo">Rp 0</strong></div>
+        </div>
+        <div class="card">
+            <h2>Catat Transaksi Kas</h2>
+            <select id="kas-jenis">
+                <option value="masuk">🟢 Uang Masuk (Penjualan)</option>
+                <option value="keluar">🔴 Uang Keluar (Belanja Modal)</option>
+            </select>
+            <input type="text" id="kas-keterangan" placeholder="Keterangan (Cth: Jual Rak Piring)">
+            <input type="number" id="kas-jumlah" placeholder="Jumlah Nominal (Rp)">
+            <button class="btn" onclick="tambahKas()">💾 Simpan Kas</button>
+        </div>
+        <div class="card">
+            <h2>Riwayat Kas</h2>
+            <div id="list-kas">Belum ada catatan.</div>
+        </div>
+    </div>
+
+    <!-- 2. APLIKASI KALKULATOR BISNIS -->
+    <div id="app-kalkulator" class="app-section">
+        <div class="card">
+            <h2>Hitung Harga Jual & Untung</h2>
+            <input type="number" id="modal-barang" placeholder="Modal Barang (Rp)" oninput="hitungBisnis()">
+            <input type="number" id="persen-untung" placeholder="Target Untung (%)" value="20" oninput="hitungBisnis()">
+            <div id="hasil-bisnis" style="background: #f1f5f9; padding: 10px; border-radius: 6px; margin-top: 8px; font-size: 0.9rem;">
+                Rekomendasi Harga Jual: <b>Rp 0</b><br>Keuntungan: <b>Rp 0</b>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. APLIKASI GENERATOR KONTEN -->
+    <div id="app-generator" class="app-section">
+        <div class="card">
+            <h2>Generator Skrip TikTok</h2>
+            <input type="text" id="gen-produk" placeholder="Nama Produk (Cth: Lemari Plastik)">
+            <input type="text" id="gen-keunggulan" placeholder="Keunggulan (Cth: Anti air & kokoh)">
+            <button class="btn" onclick="buatSkrip()">✨ Buat Skrip Otomatis</button>
+            <div id="hasil-skrip" style="margin-top: 10px; font-size: 0.85rem; white-space: pre-line; background: #f1f5f9; padding: 10px; border-radius: 6px; display:none;"></div>
+        </div>
+    </div>
+
+    <!-- 4. APLIKASI KUIS INTERAKTIF -->
+    <div id="app-kuis" class="app-section">
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b; margin-bottom: 8px;">
+                <span id="kuis-info">Soal 1 dari 3</span>
+                <span id="kuis-skor">Skor: 0</span>
+            </div>
+            <div id="kuis-tanya" class="question-text">Memuat...</div>
+            <div id="kuis-opsi"></div>
+        </div>
+    </div>
+
+    <!-- 5. APLIKASI GAME TEBAK ANGKA -->
+    <div id="app-tebakAngka" class="app-section">
+        <div class="card" style="text-align: center;">
+            <div style="display: flex; justify-content: space-around; background: #f1f5f9; padding: 8px; border-radius: 6px; margin-bottom: 10px; font-size: 0.85rem; font-weight: bold;">
+                <span>❤️ Nyawa: <span id="game-nyawa" style="color: var(--danger);">5</span></span>
+                <span>🏆 Rekor: <span id="game-rekor" style="color: var(--success);">0</span></span>
+            </div>
+            <div id="game-petunjuk" style="font-size: 0.95rem; font-weight: bold; margin: 10px 0; padding: 8px; background: #e0f2fe; color: #0369a1; border-radius: 6px;">Tebak angka 1 s/d 50!</div>
+            <input type="number" id="game-input" placeholder="Ketik angka..." style="text-align: center; font-weight: bold;">
+            <button class="btn" id="game-btn-tebak" onclick="tebakAngka()">🎮 Kirim Tebakan</button>
+            <button class="btn" id="game-btn-ulang" onclick="mulaiGame()" style="background: var(--success); display: none; margin-top: 6px;">🔄 Main Lagi</button>
+        </div>
+    </div>
+
+<script>
+    // --- NAVIGASI ANTAR APLIKASI ---
+    function gantiAplikasi(namaApp) {
+        document.querySelectorAll('.app-section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.menu-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById('app-' + namaApp).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // --- 1. SCRIPT BUKU KAS ---
+    let daftarKas = JSON.parse(localStorage.getItem('pusat_buku_kas')) || [];
+    function tambahKas() {
+        let jenis = document.getElementById('kas-jenis').value;
+        let ket = document.getElementById('kas-keterangan').value;
+        let jml = parseFloat(document.getElementById('kas-jumlah').value);
+        if(!ket || !jml || isNaN(jml)) return alert('Isi keterangan dan nominal!');
+        
+        daftarKas.unshift({ id: Date.now(), jenis, ket, jml });
+        renderKas();
+        document.getElementById('kas-keterangan').value = '';
+        document.getElementById('kas-jumlah').value = '';
+    }
+    function hapusKas(id) {
+        daftarKas = daftarKas.filter(item => item.id !== id);
+        renderKas();
+    }
+    function renderKas() {
+        localStorage.setItem('pusat_buku_kas', JSON.stringify(daftarKas));
+        let masuk = 0, keluar = 0, html = '';
+        daftarKas.forEach(item => {
+            if(item.jenis === 'masuk') {
+                masuk += item.jml;
+                html += `<div class="transaksi-item"><div><strong style="color:var(--success)">[MASUK] ${item.ket}</strong></div><div style="text-align:right"><strong style="color:var(--success)">+ Rp ${item.jml.toLocaleString('id-ID')}</strong><br><button class="btn-hapus" onclick="hapusKas(${item.id})">Hapus</button></div></div>`;
+            } else {
+                keluar += item.jml;
+                html += `<div class="transaksi-item"><div><strong style="color:var(--danger)">[KELUAR] ${item.ket}</strong></div><div style="text-align:right"><strong style="color:var(--danger)">- Rp ${item.jml.toLocaleString('id-ID')}</strong><br><button class="btn-hapus" onclick="hapusKas(${item.id})">Hapus</button></div></div>`;
+            }
+        });
+        document.getElementById('label-masuk').innerText = `Rp ${masuk.toLocaleString('id-ID')}`;
+        document.getElementById('label-keluar').innerText = `Rp ${keluar.toLocaleString('id-ID')}`;
+        document.getElementById('label-saldo').innerText = `Rp ${(masuk - keluar).toLocaleString('id-ID')}`;
+        document.getElementById('list-kas').innerHTML = html || 'Belum ada catatan.';
+    }
+    renderKas();
+
+    // --- 2. SCRIPT KALKULATOR BISNIS ---
+    function hitungBisnis() {
+        let modal = parseFloat(document.getElementById('modal-barang').value) || 0;
+        let persen = parseFloat(document.getElementById('persen-untung').value) || 0;
+        let untung = modal * (persen / 100);
+        let jual = modal + untung;
+        document.getElementById('hasil-bisnis').innerHTML = `Rekomendasi Harga Jual: <b>Rp ${jual.toLocaleString('id-ID')}</b><br>Keuntungan Bersih: <b>Rp ${untung.toLocaleString('id-ID')}</b>`;
+    }
+
+    // --- 3. SCRIPT GENERATOR KONTEN ---
+    function buatSkrip() {
+        let produk = document.getElementById('gen-produk').value || 'Produk Toko';
+        let keunggulan = document.getElementById('gen-keunggulan').value || 'Berkualitas';
+        let hasil = `🔥 3 Detik Pertama (Hook):\n"Nyesel banget baru tahu kalau ${produk} ini bikin rumah jadi rapi!"\n\n📢 Isi Promosi:\n"Halo Kak! Nih ada ${produk} unggulan. Keunggulannya ${keunggulan}. Dijamin awet dan bikin puas!"\n\n👇 Call to Action:\n"Yuk buruan amankan sebelum kehabisan, klik link di bio ya!"`;
+        let el = document.getElementById('hasil-skrip');
+        el.style.display = 'block';
+        el.innerText = hasil;
+    }
+
+    // --- 4. SCRIPT KUIS INTERAKTIF ---
+    const soalKuis = [
+        { tanya: "Bahasa pemrograman web untuk kerangka halaman adalah?", opsi: ["CSS", "HTML", "JavaScript"], jawaban: 1 },
+        { tanya: "Penyimpanan data lokal di browser dinamakan...", opsi: ["localStorage", "Google Drive", "Bluetooth"], jawaban: 0 },
+        { tanya: "Aplikasi editor koding HP yang kita pakai adalah...", opsi: ["CapCut", "Spck Editor", "Kling AI"], jawaban: 1 }
+    ];
+    let idxSoal = 0, skorKuis = 0, sudahJawabKuis = false;
+    function muatKuis() {
+        sudahJawabKuis = false;
+        let s = soalKuis[idxSoal];
+        document.getElementById('kuis-info').innerText = `Soal ${idxSoal + 1} dari ${soalKuis.length}`;
+        document.getElementById('kuis-skor').innerText = `Skor: ${skorKuis}`;
+        document.getElementById('kuis-tanya').innerText = s.tanya;
+        let html = '';
+        s.opsi.forEach((o, i) => {
+            html += `<button class="btn-opsi" onclick="jawabKuis(${i})">${o}</button>`;
+        });
+        document.getElementById('kuis-opsi').innerHTML = html;
+    }
+    function jawabKuis(pilih) {
+        if(sudahJawabKuis) return;
+        sudahJawabKuis = true;
+        let s = soalKuis[idxSoal];
+        let btns = document.querySelectorAll('#app-kuis .btn-opsi');
+        if(pilih === s.jawaban) {
+            btns[pilih].classList.add('benar');
+            skorKuis++;
+        } else {
+            btns[pilih].classList.add('salah');
+            btns[s.jawaban].classList.add('benar');
+        }
+        setTimeout(() => {
+            idxSoal++;
+            if(idxSoal < soalKuis.length) {
+                muatKuis();
+            } else {
+                document.getElementById('app-kuis').innerHTML = `<div class="card" style="text-align:center"><h2>Kuis Selesai! 🎉</h2><p>Skor Akhir: <b>${skorKuis} / ${soalKuis.length}</b></p><button class="btn" onclick="idxSoal=0;skorKuis=0;muatKuis();">🔄 Main Kuis Lagi</button></div>`;
+            }
+        }, 1200);
+    }
+    muatKuis();
+
+    // --- 5. SCRIPT GAME TEBAK ANGKA ---
+    let rahasia = 0, nyawaGame = 5, recordGame = localStorage.getItem('pusat_game_rekor') || 0;
+    document.getElementById('game-rekor').innerText = recordGame;
+    function mulaiGame() {
+        rahasia = Math.floor(Math.random() * 50) + 1;
+        nyawaGame = 5;
+        document.getElementById('game-nyawa').innerText = nyawaGame;
+        document.getElementById('game-petunjuk').innerText = "Angka baru diacak (1 - 50)! Ayo tebak.";
+        document.getElementById('game-input').value = '';
+        document.getElementById('game-input').disabled = false;
+        document.getElementById('game-btn-tebak').style.display = 'block';
+        document.getElementById('game-btn-ulang').style.display = 'none';
+    }
+    function tebakAngka() {
+        let val = parseInt(document.getElementById('game-input').value);
+        if(!val || isNaN(val) || val < 1 || val > 50) return alert('Ketik angka 1 sampai 50!');
+        let p = document.getElementById('game-petunjuk');
+        if(val === rahasia) {
+            p.innerText = `🎉 BENAR! Angkanya ${rahasia}! Kamu Menang!`;
+            recordGame++;
+            localStorage.setItem('pusat_game_rekor', recordGame);
+            document.getElementById('game-rekor').innerText = recordGame;
+            selesaiGame();
+        } else {
+            nyawaGame--;
+            document.getElementById('game-nyawa').innerText = nyawaGame;
+            if(nyawaGame <= 0) {
+                p.innerText = `❌ Game Over! Angkanya adalah ${rahasia}.`;
+                selesaiGame();
+            } else if(val < rahasia) {
+                p.innerText = `📈 Terlalu KECIL! Cari yang lebih BESAR.`;
+            } else {
+                p.innerText = `📉 Terlalu BESAR! Cari yang lebih KECIL.`;
+            }
+        }
+        document.getElementById('game-input').value = '';
+    }
+    function selesaiGame() {
+        document.getElementById('game-input').disabled = true;
+        document.getElementById('game-btn-tebak').style.display = 'none';
+        document.getElementById('game-btn-ulang').style.display = 'block';
+    }
+    mulaiGame();
+</script>
+</body>
+</html>
