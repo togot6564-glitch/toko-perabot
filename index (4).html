@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kasir Toko Perabot</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>Aplikasi Kasir Toko Perabot</h1>
+    
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+      import { getDatabase } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyB9que_uQliALp5mOzhQdI1XWULQjR2px4",
+        authDomain: "toko-perabot.firebaseapp.com",
+        databaseURL: "https://toko-perabot-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "toko-perabot",
+        storageBucket: "toko-perabot.firebasestorage.app",
+        messagingSenderId: "1033085178683",
+        appId: "1:1033085178683:web:dd6b2955e065432f5d1d1e",
+        measurementId: "G-F4EJJNC3DJ"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
+      console.h("Firebase Berhasil Terhubung!");
+    </script>
+</body>
+</html>
