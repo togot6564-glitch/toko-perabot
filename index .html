@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -40,7 +40,7 @@
     <input type="text" id="inputKetKas" placeholder="Contoh: Penjualan lemari">
     <button onclick="simpanKas()">💾 Simpan Kas</button>
     <h4>Riwayat Kas & Nota</h4>
-    <div id="listRiwayatKas">Belum ada catatan.</div> 
+    <div id="listRiwayatKas">Belum ada catatan.</div>
   </div>
 
   <div id="tab-cicilan" class="card" style="display: none;">
@@ -55,10 +55,12 @@
     <input type="number" id="cicilanNominal" placeholder="Total Tagihan">
     <button style="background: #27ae60; width: 100%; font-size: 15px; margin-bottom: 15px;" onclick="buatBukuCicilan()">📦 Buat Buku Cicilan</button>
     
-    <h4>Daftar Buku Tagihan Pelanggan</h4>
+    <h4 style="margin-top: 15px; border-top: 2px solid #eee; padding-top: 15px;">Daftar Buku Tagihan Pelanggan</h4>
+    
+    <!-- Kotak Pencarian Pelanggan -->
     <div class="search-box">
       <label style="font-size: 13px; font-weight: bold; color: #2e3650;">🔍 Cari Nama / Barang Pelanggan:</label>
-      <input type="text" id="inputCariPelanggan" placeholder="Ketik nama pelanggan..." oninput="filterDataCicilan()">
+      <input type="text" id="inputCariPelanggan" placeholder="Ketik nama pelanggan (misal: Ani)..." oninput="filterDataCicilan()">
     </div>
 
     <div id="listCicilanPelanggan">Memuat data dari database...</div>
