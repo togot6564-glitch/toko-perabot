@@ -1,11 +1,9 @@
-
 !DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pusat Toko Perabot Pro</title>
-  <!-- SDK Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <style>
@@ -25,7 +23,6 @@
   <h1>Pusat Toko Perabot Pro</h1>
   <p style="font-size: 13px; color: #666;">Kasir, Cicilan, Stok, Katalog, Supplier & Kurir</p>
 
-  <!-- Menu Navigasi Cepat -->
   <div class="menu-grid">
     <button onclick="gantiTab('kas')">🛒 Kas</button>
     <button onclick="gantiTab('cicilan')">📋 Cicilan</button>
@@ -35,7 +32,6 @@
     <button onclick="gantiTab('kurir')">🚚 Kurir</button>
   </div>
 
-  <!-- TAB KAS -->
   <div id="tab-kas" class="card">
     <h3>Catat Transaksi Kas Harian</h3>
     <label>Uang Masuk / Penjualan (Rp):</label>
@@ -47,32 +43,28 @@
     <div id="listRiwayatKas">Belum ada catatan.</div>
   </div>
 
-  <!-- TAB CICILAN -->
   <div id="tab-cicilan" class="card" style="display: none;">
     <h3>Tambah Buku Cicilan Baru</h3>
     <label>Nama Pelanggan:</label>
     <input type="text" id="cicilanNama" placeholder="Nama Pelanggan">
-    <label>No WA (Cth: 08123456789):</label>
-    <input type="text" id="cicilanHp" placeholder="No WA (Cth: 08123456789)">
-    <label>Nama Barang (Cth: Kasur Busa):</label>
-    <input type="text" id="cicilanBarang" placeholder="Nama Barang (Cth: Kasur Busa)">
+    <label>No WA:</label>
+    <input type="text" id="cicilanHp" placeholder="No WA">
+    <label>Nama Barang:</label>
+    <input type="text" id="cicilanBarang" placeholder="Nama Barang">
     <label>Total Tagihan / Plafon (Rp):</label>
-    <input type="number" id="cicilanNominal" placeholder="Total Tagihan / Plafon (Rp)">
+    <input type="number" id="cicilanNominal" placeholder="Total Tagihan">
     <button style="background: #27ae60; width: 100%; font-size: 15px; margin-bottom: 15px;" onclick="buatBukuCicilan()">📦 Buat Buku Cicilan</button>
     
     <h4>Daftar Buku Tagihan Pelanggan</h4>
-    
-    <!-- Kotak Pencarian Pelanggan -->
     <div class="search-box">
       <label style="font-size: 13px; font-weight: bold; color: #2e3650;">🔍 Cari Nama / Barang Pelanggan:</label>
-      <input type="text" id="inputCariPelanggan" placeholder="Ketik nama pelanggan (misal: Ani)..." oninput="filterDataCicilan()">
+      <input type="text" id="inputCariPelanggan" placeholder="Ketik nama pelanggan..." oninput="filterDataCicilan()">
     </div>
 
     <div id="listCicilanPelanggan">Memuat data dari database...</div>
   </div>
 
   <script>
-    // Konfigurasi Firebase Proyek Anda
     const firebaseConfig = {
       databaseURL: "https://toko-perabot-default-rtdb.asia-southeast1.firebasedatabase.app/"
     };
@@ -89,7 +81,6 @@
       document.getElementById('tab-cicilan').style.display = (tab === 'cicilan') ? 'block' : 'none';
     }
 
-    // Fungsi Simpan Buku Cicilan
     function buatBukuCicilan() {
       const nama = document.getElementById('cicilanNama').value.trim();
       const hp = document.getElementById('cicilanHp').value.trim();
@@ -122,7 +113,6 @@
         });
     }
 
-    // Memuat otomatis data cicilan saat halaman dibuka
     window.addEventListener('DOMContentLoaded', () => {
       db.ref('cicilan').on('value', (snapshot) => {
         cacheDataCicilan = snapshot.val() || {};
@@ -132,7 +122,6 @@
       });
     });
 
-    // Fungsi Render Daftar Cicilan ke HTML
     function tampilkanDataCicilan(data) {
       const daftarDiv = document.getElementById('listCicilanPelanggan');
       if (!data || Object.keys(data).length === 0) {
@@ -151,7 +140,6 @@
       daftarDiv.innerHTML = html;
     }
 
-    // Fungsi Filter/Pencarian Pelanggan secara Instan
     function filterDataCicilan() {
       const keyword = document.getElementById('inputCariPelanggan').value.toLowerCase();
       if (!keyword) {
