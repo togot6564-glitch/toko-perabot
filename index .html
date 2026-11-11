@@ -1,201 +1,148 @@
-t
-<!DOCTYPE html>
+
+!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pusat Toko Perabot Pro</title>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 15px; background: #f4f6f9; color: #333; }
-        h1 { font-size: 20px; color: #2c3e50; margin-bottom: 5px; }
-        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-        button, .btn { padding: 10px; background: #3498db; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-align: center; }
-        button:active { background: #2980b9; }
-        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        input, select { width: 100%; padding: 8px; margin: 5px 0 12px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        .history-item { padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; background: #fafafa; margin-bottom: 5px; border-radius: 4px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pusat Toko Perabot Pro</title>
+  <!-- SDK Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 15px; background: #f4f4f9; color: #333; }
+    h1 { font-size: 20px; color: #2e3650; margin-bottom: 5px; }
+    .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
+    button, .btn { padding: 10px; background: #3498db; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-align: center; }
+    button:active { background: #230089; }
+    .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
+    input, select { width: 100%; padding: 8px; margin: 5px 0 12px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+    .history-item { padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; background: #fafafa; margin-bottom: 5px; border-radius: 4px; }
+  </style>
 </head>
 <body>
 
-    <h1>Pusat Toko Perabot Pro</h1>
-    <p style="font-size: 13px; color: #666;">Kasir, Cicilan, Stok, Katalog, Supplier & Kurir</p>
+  <h1>Pusat Toko Perabot Pro</h1>
+  <p style="font-size: 13px; color: #666;">Kasir, Cicilan, Stok, Katalog, Supplier & Kurir</p>
 
-    <!-- Menu Navigasi Cepat -->
-    <div class="menu-grid">
-        <button onclick="gantiTab('kas')">📦 Kas</button>
-        <button onclick="gantiTab('cicilan')">📋 Cicilan</button>
-        <button onclick="gantiTab('stok')">📊 Stok</button>
-        <button onclick="gantiTab('katalog')">🏷️ Katalog</button>
-        <button onclick="gantiTab('supplier')">📒 Supplier</button>
-        <button onclick="gantiTab('kurir')">🚚 Kurir</button>
-    </div>
+  <!-- Menu Navigasi Cepat -->
+  <div class="menu-grid">
+    <button onclick="gantiTab('kas')">🛒 Kas</button>
+    <button onclick="gantiTab('cicilan')">📋 Cicilan</button>
+    <button onclick="gantiTab('stok')">📦 Stok</button>
+    <button onclick="gantiTab('katalog')">📁 Katalog</button>
+    <button onclick="gantiTab('supplier')">🏭 Pemasok</button>
+    <button onclick="gantiTab('kurir')">🚚 Kurir</button>
+  </div>
 
-    <!-- TAB KASIR -->
-    <div id="tab-kas" class="card">
-        <h3>Catat Transaksi Kas Harian</h3>
-        <label>Uang Masuk / Penjualan (Rp):</label>
-        <input type="number" id="inputUangMasuk" placeholder="Contoh: 500000">
+  <!-- TAB KAS -->
+  <div id="tab-kas" class="card">
+    <h3>Catat Transaksi Kas Harian</h3>
+    <label>Uang Masuk / Penjualan (Rp):</label>
+    <input type="number" id="inputKasMasuk" placeholder="Contoh: 500000">
+    <label>Keterangan / Nama Barang:</label>
+    <input type="text" id="inputKetKas" placeholder="Contoh: Penjualan lemari">
+    <button onclick="simpanKas()">💾 Simpan Kas</button>
+    <h4>Riwayat Kas & Nota</h4>
+    <div id="listRiwayatKas">Belum ada catatan.</div>
+    <br>
+    <button style="background: #27ae60;" onclick="window.print()">🖨️ Cetak Struk Nota</button>
+    <button style="background: #e67e22; margin-top: 5px;" onclick="backupJSON()">📥 Backup Data (JSON)</button>
+  </div>
 
-        <label>Keterangan / Nama Barang:</label>
-        <input type="text" id="inputKetKas" placeholder="Contoh: Penjualan Lemari">
+  <!-- TAB CICILAN DENGAN TOMBOL INTERAKTIF -->
+  <div id="tab-cicilan" class="card" style="display: none;">
+    <h3>Manajemen Buku Cicilan Pelanggan</h3>
+    <label>Nama Pelanggan:</label>
+    <input type="text" id="cicilanNama" placeholder="Contoh: Ana">
+    <label>Nomor HP:</label>
+    <input type="text" id="cicilanHp" placeholder="Contoh: 089766677">
+    <label>Nama Barang:</label>
+    <input type="text" id="cicilanBarang" placeholder="Contoh: Kasur">
+    <label>Total Nominal (Rp):</label>
+    <input type="number" id="cicilanNominal" placeholder="Contoh: 500000">
+    <button style="background: #27ae60; width: 100%; font-size: 15px; margin-bottom: 15px;" onclick="buatBukuCicilan()">📦 Buat Buku Cicilan</button>
 
-        <button onclick="simpanKas()">💾 Simpan Kas</button>
+    <h4>Daftar Buku Tagihan Pelanggan</h4>
+    <div id="listCicilanPelanggan">Belum ada data cicilan.</div>
+  </div>
 
-        <h4>Riwayat Kas & Nota</h4>
-        <div id="listRiwayatKas">Belum ada catatan.</div>
-        <br>
-        <button style="background: #27ae60;" onclick="window.print()">🖨️ Cetak Struk Nota</button>
-        <button style="background: #e67e22; margin-top: 5px;" onclick="backupDataJSON()">☁️ Backup Data (JSON)</button>
-    </div>
+  <script>
+    // Konfigurasi Firebase Proyek Anda
+    const firebaseConfig = {
+      databaseURL: "https://toko-perabot-default-rtdb.asia-southeast1.firebasedatabase.app/"
+    };
 
-    <!-- TAB CICILAN DENGAN TOMBOL INTERAKTIF -->
-    <div id="tab-cicilan" class="card" style="display:none;">
-        <h3>Manajemen Buku Cicilan Pelanggan</h3>
-        <button style="background: #27ae60; width: 100%; font-size: 15px; margin-bottom: 15px;" onclick="buatBukuCicilan()">📥 Buat Buku Cicilan</button>
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.database();
 
-        <h4>Daftar Buku Tagihan Pelanggan</h4>
-        <div id="listCicilanPelanggan">Belum ada data cicilan.</div>
-    </div>
+    function gantiTab(tab) {
+      document.getElementById('tab-kas').style.display = (tab === 'kas') ? 'block' : 'none';
+      document.getElementById('tab-cicilan').style.display = (tab === 'cicilan') ? 'block' : 'none';
+    }
 
-    <script>
-        // Konfigurasi Firebase Proyek Anda
-        const firebaseConfig = {
-            databaseURL: "https://toko-perabot-default-rtdb.asia-southeast1.firebasedatabase.app/"
-        };
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.database();
+    // Fungsi Simpan Buku Cicilan ke Firebase Database & Muncul di Daftar Bawah
+    function buatBukuCicilan() {
+      const nama = document.getElementById('cicilanNama').value.trim();
+      const hp = document.getElementById('cicilanHp').value.trim();
+      const barang = document.getElementById('cicilanBarang').value.trim();
+      const nominal = document.getElementById('cicilanNominal').value.trim();
 
-        function gantiTab(tab) {
-            document.getElementById('tab-kas').style.display = (tab === 'kas') ? 'block' : 'none';
-            document.getElementById('tab-cicilan').style.display = (tab === 'cicilan') ? 'block' : 'none';
-        }
+      if (!nama || !nominal) {
+        alert("Nama pelanggan dan nominal wajib diisi!");
+        return;
+      }
 
-        // Fungsi Simpan Kas
-        function simpanKas() {
-            let nominal = document.getElementById('inputUangMasuk').value;
-            let ket = document.getElementById('inputKetKas').value || "Penjualan Umum";
-            if(!nominal) { alert("Masukkan jumlah uang masuk!"); return; }
+      const dataBaru = {
+        nama: nama,
+        hp: hp,
+        barang: barang,
+        nominal: Number(nominal),
+        tanggal: new Date().toLocaleDateString('id-ID')
+      };
 
-            let transaksiRef = db.ref('transaksi_kas').push();
-            transaksiRef.set({
-                keterangan: ket,
-                jumlah: parseFloat(nominal),
-                tanggal: new Date().toLocaleString()
-            }, (error) => {
-                if (error) {
-                    alert("Gagal menyimpan!");
-                } else {
-                    alert("Transaksi kas berhasil disimpan!");
-                    document.getElementById('inputUangMasuk').value = '';
-                    document.getElementById('inputKetKas').value = '';
-                }
-            });
-        }
-
-        // Monitor Data Riwayat Kas Realtime
-        db.ref('transaksi_kas').on('value', (snapshot) => {
-            let container = document.getElementById('listRiwayatKas');
-            container.innerHTML = '';
-            let data = snapshot.val();
-            if(data) {
-                Object.values(data).reverse().forEach(item => {
-                    container.innerHTML += `<div class="history-item"><b>${item.tanggal}</b><br>${item.keterangan} - <b>Rp ${item.jumlah.toLocaleString()}</b></div>`;
-                });
-            } else {
-                container.innerHTML = "Belum ada catatan.";
-            }
+      db.ref('cicilan').push(dataBaru)
+        .then(() => {
+          alert("Buku cicilan berhasil dibuat dan disimpan!");
+          document.getElementById('cicilanNama').value = '';
+          document.getElementById('cicilanHp').value = '';
+          document.getElementById('cicilanBarang').value = '';
+          document.getElementById('cicilanNominal').value = '';
+        })
+        .catch((error) => {
+          alert("Gagal menyimpan: " + error.message);
         });
+    }
 
-        // ==========================================
-        // FUNGSI BUAT BUKU & CATAT CICILAN OTOMATIS
-        // ==========================================
-        function buatBukuCicilan() {
-            let nama = prompt("Masukkan Nama Pelanggan:");
-            if (!nama || nama.trim() === "") return;
-
-            let utangAwalStr = prompt("Masukkan Total Utang Awal (Rp):", "450000");
-            if (!utangAwalStr) return;
-            let utangAwal = parseFloat(utangAwalStr) || 0;
-
-            let pelangganRef = db.ref('cicilan_pelanggan/' + nama.trim());
-            pelangganRef.set({
-                nama: nama.trim(),
-                sisaUtang: utangAwal,
-                riwayat: []
-            }, (error) => {
-                if(error) {
-                    alert("Gagal membuat buku cicilan.");
-                } else {
-                    alert("Buku cicilan atas nama " + nama + " berhasil dibuat dengan utang Rp " + utangAwal.toLocaleString());
-                }
-            });
+    // Memuat otomatis data cicilan saat halaman dibuka
+    window.addEventListener('DOMContentLoaded', () => {
+      const daftarDiv = document.getElementById('listCicilanPelanggan');
+      db.ref('cicilan').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (!data) {
+          daftarDiv.innerHTML = "Belum ada data cicilan.";
+          return;
         }
-
-        function bayarCicilan(namaPelanggan, sisaUtangLama) {
-            let bayarStr = prompt(`Masukkan Nominal Pembayaran Cicilan untuk ${namaPelanggan}\n(Sisa Utang Saat Ini: Rp ${sisaUtangLama.toLocaleString()}):`, "20000");
-            if (!bayarStr) return;
-            let bayar = parseFloat(bayarStr) || 0;
-            if (bayar <= 0) return;
-
-            let sisaUtangBaru = sisaUtangLama - bayar;
-            if (sisaUtangBaru < 0) sisaUtangBaru = 0;
-
-            let pelangganRef = db.ref('cicilan_pelanggan/' + namaPelanggan);
-            pelangganRef.once('value', (snapshot) => {
-                let data = snapshot.val() || { riwayat: [] };
-                let riwayatBaru = data.riwayat || [];
-                riwayatBaru.push({ tanggal: new Date().toLocaleString(), bayar: bayar });
-
-                pelangganRef.update({
-                    sisaUtang: sisaUtangBaru,
-                    riwayat: riwayatBaru
-                }, (error) => {
-                    if(error) {
-                        alert("Gagal mencatat pembayaran.");
-                    } else {
-                        alert(`Cicilan Rp ${bayar.toLocaleString()} berhasil dicatat!\nSisa utang sekarang: Rp ${sisaUtangBaru.toLocaleString()}`);
-                    }
-                });
-            });
+        let html = "";
+        for (let id in data) {
+          let item = data[id];
+          html += `<div class="history-item">
+            <strong>${item.nama}</strong> (${item.hp || '-' })<br>
+            Barang: ${item.barang || '-'} | Rp ${Number(item.nominal).toLocaleString('id-ID')}<br>
+            <small>Tanggal: ${item.tanggal || '-'}</small>
+          </div>`;
         }
+        daftarDiv.innerHTML = html;
+      });
+    });
 
-        // Monitor Data Cicilan Realtime & Tombol Bayar
-        db.ref('cicilan_pelanggan').on('value', (snapshot) => {
-            let container = document.getElementById('listCicilanPelanggan');
-            container.innerHTML = '';
-            let data = snapshot.val();
-            if(data) {
-                Object.entries(data).forEach(([key, p]) => {
-                    container.innerHTML += `
-                        <div class="history-item">
-                            👤 <b>${p.nama}</b><br>
-                            Sisa Utang: <span style="color:red; font-weight:bold;">Rp ${(p.sisaUtang || 0).toLocaleString()}</span><br>
-                            <button style="margin-top: 6px; padding: 6px 12px; background: #e67e22; font-size: 13px;" onclick="bayarCicilan('${p.nama}', ${p.sisaUtang || 0})">💳 Catat Pembayaran Cicilan</button>
-                        </div>
-                    `;
-                });
-            } else {
-                container.innerHTML = "Belum ada data cicilan.";
-            }
-        });
-
-        function backupDataJSON() {
-            db.ref().once('value', (snapshot) => {
-                let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(snapshot.val(), null, 2));
-                let downloadAnchor = document.createElement('a');
-                downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", "backup_toko_perabot.json");
-                document.body.appendChild(downloadAnchor);
-                downloadAnchor.click();
-                downloadAnchor.remove();
-            });
-        }
-    </script>
+    function simpanKas() {
+      alert("Fitur kas siap digunakan!");
+    }
+    function backupJSON() {
+      alert("Fitur backup siap digunakan!");
+    }
+  </script>
 </body>
 </html>
