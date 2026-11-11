@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -16,6 +16,7 @@
     .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
     input, select { width: 100%; padding: 8px; margin: 5px 0 12px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
     .history-item { padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; background: #fafafa; margin-bottom: 5px; border-radius: 4px; }
+    .search-box { background: #eef2f7; border-left: 4px solid #3498db; }
   </style>
 </head>
 <body>
@@ -51,7 +52,7 @@
     <label>Nama Pelanggan:</label>
     <input type="text" id="cicilanNama" placeholder="Contoh: Ana">
     <label>Nomor HP:</label>
-    <input type="text" id="cicilanHp" placeholder="Contoh: 089766677">
+    <input type="text" id="cicilanHp" placeholder="Contoh: 0897778888">
     <label>Nama Barang:</label>
     <input type="text" id="cicilanBarang" placeholder="Contoh: Kasur">
     <label>Total Nominal (Rp):</label>
@@ -59,6 +60,13 @@
     <button style="background: #27ae60; width: 100%; font-size: 15px; margin-bottom: 15px;" onclick="buatBukuCicilan()">📦 Buat Buku Cicilan</button>
     
     <h4>Daftar Buku Tagihan Pelanggan</h4>
+    
+    <!-- Kotak Pencarian Pelanggan -->
+    <div class="search-box" style="padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+      <label style="font-size: 13px; font-weight: bold; color: #2e3650;">🔍 Cari Nama / Barang Pelanggan:</label>
+      <input type="text" id="inputCariPelanggan" placeholder="Ketik nama pelanggan (misal: Ani)..." oninput="filterDataCicilan()">
+    </div>
+
     <div id="listCicilanPelanggan">Memuat data dari database...</div>
   </div>
 
@@ -72,6 +80,8 @@
       firebase.initializeApp(firebaseConfig);
     }
     const db = firebase.database();
+
+    let cacheDataCicilan = {}; // Menyimpan data sementara untuk pencarian
 
     function gantiTab(tab) {
       document.getElementById('tab-kas').style.display = (tab === 'kas') ? 'block' : 'none';
@@ -113,31 +123,60 @@
 
     // Memuat otomatis data cicilan saat halaman dibuka
     window.addEventListener('DOMContentLoaded', () => {
-      const daftarDiv = document.getElementById('listCicilanPelanggan');
       db.ref('cicilan').on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (!data) {
-          daftarDiv.innerHTML = "Belum ada data cicilan.";
-          return;
-        }
-        let html = "";
-        for (let id in data) {
-          let item = data[id];
-          html += `<div class="history-item">
-            <strong>${item.nama}</strong> (${item.hp || '-' })<br>
-            Barang: ${item.barang || '-'} | Rp ${Number(item.nominal).toLocaleString('id-ID')}<br>
-            <small>Tanggal: ${item.tanggal || '-'}</small>
-          </div>`;
-        }
-        daftarDiv.innerHTML = html;
+        cacheDataCicilan = snapshot.val() || {};
+        tampilkanDataCicilan(cacheDataCicilan);
       }, (error) => {
-        daftarDiv.innerHTML = "Gagal memuat data: " + error.message;
+        document.getElementById('listCicilanPelanggan').innerHTML = "Gagal memuat data: " + error.message;
       });
     });
+
+    // Fungsi Render Daftar Cicilan ke HTML
+    function tampilkanDataCicilan(data) {
+      const daftarDiv = document.getElementById('listCicilanPelanggan');
+      if (!data || Object.keys(data).length === 0) {
+        daftarDiv.innerHTML = "Belum ada data cicilan.";
+        return;
+      }
+      let html = "";
+      for (let id in data) {
+        let item = data[id];
+        html += `<div class="history-item">
+          <strong>${item.nama}</strong> (${item.hp || '-' })<br>
+          Barang: ${item.barang || '-'} | Rp ${Number(item.nominal).toLocaleString('id-ID')}<br>
+          <small>Tanggal: ${item.tanggal || '-'}</small>
+        </div>`;
+      }
+      daftarDiv.innerHTML = html;
+    }
+
+    // Fungsi Filter/Pencarian Pelanggan secara Instan
+    function filterDataCicilan() {
+      const keyword = document.getElementById('inputCariPelanggan').value.toLowerCase();
+      if (!keyword) {
+        tampilkanDataCicilan(cacheDataCicilan);
+        return;
+      }
+
+      let filtered = {};
+      for (let id in cacheDataCicilan) {
+        let item = cacheDataCicilan[id];
+        let namaPelanggan = (item.nama || "").toLowerCase();
+        let namaBarang = (item.barang || "").toLowerCase();
+        let nomorHp = (item.hp || "").toLowerCase();
+
+        // Jika ketikan cocok dengan nama, barang, atau nomor HP
+        if (namaPelanggan.includes(keyword) || namaBarang.includes(keyword) || nomorHp.includes(keyword)) {
+          filtered[id] = item;
+        }
+      }
+      tampilkanDataCicilan(filtered);
+    }
 
     function simpanKas() {
       alert("Fitur kas siap digunakan!");
     }
   </script>
 </body>
+  </html>body>
   </html>
