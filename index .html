@@ -1,3 +1,4 @@
+
 !DOCTYPE html>
 <html lang="id">
 <head>
@@ -16,7 +17,7 @@
     .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
     input, select { width: 100%; padding: 8px; margin: 5px 0 12px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
     .history-item { padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; background: #fafafa; margin-bottom: 5px; border-radius: 4px; }
-    .search-box { background: #eef2f7; border-left: 4px solid #3498db; }
+    .search-box { background: #eef2f7; border-left: 4px solid #3498db; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
   </style>
 </head>
 <body>
@@ -50,19 +51,19 @@
   <div id="tab-cicilan" class="card" style="display: none;">
     <h3>Tambah Buku Cicilan Baru</h3>
     <label>Nama Pelanggan:</label>
-    <input type="text" id="cicilanNama" placeholder="Contoh: Ana">
-    <label>Nomor HP:</label>
-    <input type="text" id="cicilanHp" placeholder="Contoh: 0897778888">
-    <label>Nama Barang:</label>
-    <input type="text" id="cicilanBarang" placeholder="Contoh: Kasur">
-    <label>Total Nominal (Rp):</label>
-    <input type="number" id="cicilanNominal" placeholder="Contoh: 500000">
+    <input type="text" id="cicilanNama" placeholder="Nama Pelanggan">
+    <label>No WA (Cth: 08123456789):</label>
+    <input type="text" id="cicilanHp" placeholder="No WA (Cth: 08123456789)">
+    <label>Nama Barang (Cth: Kasur Busa):</label>
+    <input type="text" id="cicilanBarang" placeholder="Nama Barang (Cth: Kasur Busa)">
+    <label>Total Tagihan / Plafon (Rp):</label>
+    <input type="number" id="cicilanNominal" placeholder="Total Tagihan / Plafon (Rp)">
     <button style="background: #27ae60; width: 100%; font-size: 15px; margin-bottom: 15px;" onclick="buatBukuCicilan()">📦 Buat Buku Cicilan</button>
     
     <h4>Daftar Buku Tagihan Pelanggan</h4>
     
     <!-- Kotak Pencarian Pelanggan -->
-    <div class="search-box" style="padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+    <div class="search-box">
       <label style="font-size: 13px; font-weight: bold; color: #2e3650;">🔍 Cari Nama / Barang Pelanggan:</label>
       <input type="text" id="inputCariPelanggan" placeholder="Ketik nama pelanggan (misal: Ani)..." oninput="filterDataCicilan()">
     </div>
@@ -81,7 +82,7 @@
     }
     const db = firebase.database();
 
-    let cacheDataCicilan = {}; // Menyimpan data sementara untuk pencarian
+    let cacheDataCicilan = {};
 
     function gantiTab(tab) {
       document.getElementById('tab-kas').style.display = (tab === 'kas') ? 'block' : 'none';
@@ -165,7 +166,6 @@
         let namaBarang = (item.barang || "").toLowerCase();
         let nomorHp = (item.hp || "").toLowerCase();
 
-        // Jika ketikan cocok dengan nama, barang, atau nomor HP
         if (namaPelanggan.includes(keyword) || namaBarang.includes(keyword) || nomorHp.includes(keyword)) {
           filtered[id] = item;
         }
@@ -178,5 +178,4 @@
     }
   </script>
 </body>
-  </html>body>
-  </html>
+</html>
