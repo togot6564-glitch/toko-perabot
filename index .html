@@ -3,36 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uji Coba Buku Cicilan Pro</title>
-    <!-- Memuat Firebase versi 8 -->
+    <title>Pusat Toko Perabot Pro</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 15px; background: #f4f6f9; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
-        h2 { color: #2e3650; margin-top: 0; }
-        .search-box { background: #eef2f7; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
-        input { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-        .history-item { padding: 12px; border-bottom: 1px solid #eee; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background: #f4f6f9; }
+        h1 { font-size: 20px; color: #2e3650; margin-bottom: 5px; }
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
+        button, .btn { padding: 10px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 13px; text-align: center; }
+        button:active { background: #230089; }
+        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        input, select { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .history-item { padding: 10px; border-bottom: 1px solid #eee; }
+        .search-box { background: #eef2f7; padding: 10px; border-radius: 6px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>Buku Cicilan Pelanggan</h2>
+    <h1>Pusat Toko Perabot Pro</h1>
+    <p style="font-size: 13px; color: #666;">Kasir, Cicilan, Stok, & Manajemen Toko</p>
+
+    <!-- Menu Navigasi Tab -->
+    <div class="menu-grid">
+        <button onclick="gantiTab('kas')">🛒 Kas</button>
+        <button onclick="gantiTab('cicilan')">📋 Cicilan</button>
+        <button onclick="gantiTab('stok')">📦 Stok</button>
+        <button onclick="gantiTab('katalog')">📁 Katalog</button>
+        <button onclick="gantiTab('supplier')">🏭 Supplier</button>
+        <button onclick="gantiTab('kurir')">🚚 Kurir</button>
+    </div>
+
+    <!-- Tab Cicilan -->
+    <div id="tab-cicilan" class="card">
+        <h3>Buku Cicilan Pelanggan</h3>
         
-        <!-- Kotak Pencarian -->
+        <!-- Kolom Pencarian Pelanggan & No HP -->
         <div class="search-box">
-            <label style="font-size: 14px; font-weight: bold;">Cari Pelanggan / No HP:</label>
+            <label style="font-size: 13px; font-weight: bold;">Cari Pelanggan / No HP:</label>
             <input type="text" id="inputCariPelanggan" oninput="filterDataCicilan()" placeholder="Ketik nama, barang, atau no HP...">
         </div>
 
-        <!-- Daftar Data Cicilan -->
         <div id="listCicilanPelanggan">Memuat data cicilan...</div>
     </div>
 
     <script>
-        // Konfigurasi Firebase Realtime Database
+        // Konfigurasi Firebase
         const firebaseConfig = {
             databaseURL: "https://toko-perabot-default-rtdb.firebaseio.com/"
         };
@@ -44,7 +59,11 @@
 
         let cacheDataCicilan = {};
 
-        // Ambil data cicilan dari Firebase secara real-time
+        function gantiTab(tab) {
+            console.log("Membuka tab: " + tab);
+        }
+
+        // Ambil data dari Firebase secara real-time
         function ambilDataCicilan() {
             db.ref('cicilan').on('value', (snapshot) => {
                 const data = snapshot.val();
@@ -53,11 +72,11 @@
             });
         }
 
-        // Render atau tampilkan data ke layar HTML
+        // Tampilkan data ke elemen HTML
         function tampilkanDataCicilan(data) {
             const daftarDiv = document.getElementById('listCicilanPelanggan');
             if (!data || Object.keys(data).length === 0) {
-                daftarDiv.innerHTML = "Belum ada data cicilan di database.";
+                daftarDiv.innerHTML = "Belum ada data cicilan.";
                 return;
             }
 
@@ -73,7 +92,7 @@
             daftarDiv.innerHTML = html;
         }
 
-        // Fungsi Filter Pencarian Real-Time
+        // Fungsi Filter Pencarian (Real-time saat diketik)
         function filterDataCicilan() {
             const inputElement = document.getElementById('inputCariPelanggan');
             if (!inputElement) return;
@@ -92,7 +111,6 @@
                 let namaBarang = (item.barang || "").toLowerCase();
                 let nomorHp = (item.hp || "").toLowerCase();
 
-                // Mencocokkan input dengan nama, barang, atau nomor HP
                 if (namaPelanggan.includes(keyword) || namaBarang.includes(keyword) || nomorHp.includes(keyword)) {
                     filtered[id] = item;
                 }
@@ -101,7 +119,7 @@
             tampilkanDataCicilan(filtered);
         }
 
-        // Jalankan fungsi saat halaman dimuat
+        // Jalankan saat halaman dimuat
         window.onload = function() {
             ambilDataCicilan();
         };
