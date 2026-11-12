@@ -1,171 +1,124 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pusat Toko Perabot Pro</title>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 15px; background: #f4f4f9; color: #333; }
-    h1 { font-size: 20px; color: #2e3650; margin-bottom: 5px; }
-    .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-    button, .btn { padding: 10px; background: #3498db; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-align: center; }
-    button:active { background: #230089; }
-    .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
-    input, select { width: 100%; padding: 8px; margin: 5px 0 12px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-    .history-item { padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; background: #fafafa; margin-bottom: 5px; border-radius: 4px; }
-    .search-box { background: #eef2f7; border-left: 4px solid #3498db; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pusat Toko Perabot Pro</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background: #f4f6f9; }
+        h1 { font-size: 20px; color: #2e3650; margin-bottom: 5px; }
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
+        button, .btn { padding: 10px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 13px; text-align: center; }
+        button:active { background: #230089; }
+        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        input, select { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .history-item { padding: 10px; border-bottom: 1px solid #eee; }
+        .search-box { background: #eef2f7; padding: 10px; border-radius: 6px; margin-bottom: 10px; }
+    </style>
 </head>
-<body> 
+<body>
 
-  <h1>Pusat Toko Perabot Pro</h1>
-  <p style="font-size: 13px; color: #666;">Kasir, Cicilan, Stok, Katalog, Supplier & Kurir</p>
+    <h1>Pusat Toko Perabot Pro</h1>
+    <p style="font-size: 13px; color: #666;">Kasir, Cicilan, Stok, & Manajemen Toko</p>
 
-  <div class="menu-grid">
-    <button onclick="gantiTab('kas')">🛒 Kas</button>
-    <button onclick="gantiTab('cicilan')">📋 Cicilan</button>
-    <button onclick="gantiTab('stok')">📦 Stok</button>
-    <button onclick="gantiTab('katalog')">📁 Katalog</button>
-    <button onclick="gantiTab('supplier')">🏭 Pemasok</button>
-    <button onclick="gantiTab('kurir')">🚚 Kurir</button>
-  </div>
-
-  <div id="tab-kas" class="card">
-    <h3>Catat Transaksi Kas Harian</h3>
-    <label>Uang Masuk / Penjualan (Rp):</label>
-    <input type="number" id="inputKasMasuk" placeholder="Contoh: 500000">
-    <label>Keterangan / Nama Barang:</label>
-    <input type="text" id="inputKetKas" placeholder="Contoh: Penjualan lemari">
-    <button onclick="simpanKas()">💾 Simpan Kas</button>
-    <h4>Riwayat Kas & Nota</h4>
-    <div id="listRiwayatKas">Belum ada catatan.</div>
-  </div>
-
-  <div id="tab-cicilan" class="card" style="display: none;">
-    <h3>Tambah Buku Cicilan Baru</h3>
-    <label>Nama Pelanggan:</label>
-    <input type="text" id="cicilanNama" placeholder="Nama Pelanggan">
-    <label>No WA:</label>
-    <input type="text" id="cicilanHp" placeholder="No WA">
-    <label>Nama Barang:</label>
-    <input type="text" id="cicilanBarang" placeholder="Nama Barang">
-    <label>Total Tagihan / Plafon (Rp):</label>
-    <input type="number" id="cicilanNominal" placeholder="Total Tagihan">
-    <button style="background: #27ae60; width: 100%; font-size: 15px; margin-bottom: 15px;" onclick="buatBukuCicilan()">📦 Buat Buku Cicilan</button>
-    
-    <h4 style="margin-top: 15px; border-top: 2px solid #eee; padding-top: 15px;">Daftar Buku Tagihan Pelanggan</h4>
-    
-    <!-- Kotak Pencarian Pelanggan -->
-    <div class="search-box">
-      <label style="font-size: 13px; font-weight: bold; color: #2e3650;">🔍 Cari Nama / Barang Pelanggan:</label>
-      <input type="text" id="inputCariPelanggan" placeholder="Ketik nama pelanggan (misal: Budi atau Ana)..." oninput="filterDataCicilan()">
+    <!-- Menu Navigasi Tab -->
+    <div class="menu-grid">
+        <button onclick="gantiTab('kas')">🛒 Kas</button>
+        <button onclick="gantiTab('cicilan')">📋 Cicilan</button>
+        <button onclick="gantiTab('stok')">📦 Stok</button>
+        <button onclick="gantiTab('katalog')">📁 Katalog</button>
+        <button onclick="gantiTab('supplier')">🏭 Supplier</button>
+        <button onclick="gantiTab('kurir')">🚚 Kurir</button>
     </div>
 
-    <div id="listCicilanPelanggan">Memuat data dari database...</div>
-  </div>
+    <!-- Tab Cicilan -->
+    <div id="tab-cicilan" class="card">
+        <h3>Buku Cicilan Pelanggan</h3>
+        
+        <!-- Input Pencarian Pelanggan -->
+        <div class="search-box">
+            <label style="font-size: 13px; font-weight: bold;">Cari Pelanggan:</label>
+            <input type="text" id="inputCariPelanggan" oninput="filterDataCicilan()" placeholder="Ketik nama, barang, atau no HP...">
+        </div>
 
-  <script>
-    const firebaseConfig = {
-      databaseURL: "https://toko-perabot-default-rtdb.asia-southeast1.firebasedatabase.app/"
-    };
+        <div id="listCicilanPelanggan">Memuat data cicilan...</div>
+    </div>
 
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.database();
+    <script>
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            databaseURL: "https://toko-perabot-default-rtdb.firebaseio.com/"
+        };
 
-    let cacheDataCicilan = {};
-
-    function gantiTab(tab) {
-      document.getElementById('tab-kas').style.display = (tab === 'kas') ? 'block' : 'none';
-      document.getElementById('tab-cicilan').style.display = (tab === 'cicilan') ? 'block' : 'none';
-    }
-
-    function buatBukuCicilan() {
-      const nama = document.getElementById('cicilanNama').value.trim();
-      const hp = document.getElementById('cicilanHp').value.trim();
-      const barang = document.getElementById('cicilanBarang').value.trim();
-      const nominal = document.getElementById('cicilanNominal').value.trim();
-
-      if (!nama || !nominal) {
-        alert("Nama pelanggan dan nominal wajib diisi!");
-        return;
-      }
-
-      const dataBaru = {
-        nama: nama,
-        hp: hp,
-        barang: barang,
-        nominal: Number(nominal),
-        tanggal: new Date().toLocaleDateString('id-ID')
-      };
-
-      db.ref('cicilan').push(dataBaru)
-        .then(() => {
-          alert("Buku cicilan berhasil dibuat dan disimpan!");
-          document.getElementById('cicilanNama').value = '';
-          document.getElementById('cicilanHp').value = '';
-          document.getElementById('cicilanBarang').value = '';
-          document.getElementById('cicilanNominal').value = '';
-        })
-        .catch((error) => {
-          alert("Gagal menyimpan ke database: " + error.message);
-        });
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      db.ref('cicilan').on('value', (snapshot) => {
-        cacheDataCicilan = snapshot.val() || {};
-        tampilkanDataCicilan(cacheDataCicilan);
-      }, (error) => {
-        document.getElementById('listCicilanPelanggan').innerHTML = "Gagal memuat data: " + error.message;
-      });
-    });
-
-    function tampilkanDataCicilan(data) {
-      const daftarDiv = document.getElementById('listCicilanPelanggan');
-      if (!data || Object.keys(data).length === 0) {
-        daftarDiv.innerHTML = "Belum ada data cicilan.";
-        return;
-      }
-      let html = "";
-      for (let id in data) {
-        let item = data[id];
-        html += `<div class="history-item">
-          <strong>${item.nama}</strong> (${item.hp || '-' })<br>
-          Barang: ${item.barang || '-'} | Rp ${Number(item.nominal).toLocaleString('id-ID')}<br>
-          <small>Tanggal: ${item.tanggal || '-'}</small>
-        </div>`;
-      }
-      daftarDiv.innerHTML = html;
-    }
-
-    function filterDataCicilan() {
-      const keyword = document.getElementById('inputCariPelanggan').value.toLowerCase();
-      if (!keyword) {
-        tampilkanDataCicilan(cacheDataCicilan);
-        return;
-      }
-
-      let filtered = {};
-      for (let id in cacheDataCicilan) {
-        let item = cacheDataCicilan[id];
-        let namaPelanggan = (item.nama || "").toLowerCase();
-        let namaBarang = (item.barang || "").toLowerCase();
-        let nomorHp = (item.hp || "").toLowerCase();
-
-        if (namaPelanggan.includes(keyword) || namaBarang.includes(keyword) || nomorHp.includes(keyword)) {
-          filtered[id] = item;
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
-      }
-      tampilkanDataCicilan(filtered);
-    }
+        const db = firebase.database();
 
-    function simpanKas() {
-      alert("Fitur kas siap digunakan!");
-    }
-  </script>
+        let cacheDataCicilan = {};
+
+        function gantiTab(tab) {
+            // Logika ganti tab bisa disesuaikan dengan kebutuhan Anda
+            console.log("Membuka tab: " + tab);
+        }
+
+        // Ambil data dari Firebase saat aplikasi dibuka
+        function ambilDataCicilan() {
+            db.ref('cicilan').on('value', (snapshot) => {
+                const data = snapshot.val();
+                cacheDataCicilan = data || {};
+                tampilkanDataCicilan(cacheDataCicilan);
+            });
+        }
+
+        function tampilkanDataCicilan(data) {
+            const daftarDiv = document.getElementById('listCicilanPelanggan');
+            if (!data || Object.keys(data).length === 0) {
+                daftarDiv.innerHTML = "Belum ada data cicilan.";
+                return;
+            }
+
+            let html = "";
+            for (let id in data) {
+                let item = data[id];
+                html += `<div class="history-item">
+                    <strong>${item.nama || 'Tanpa Nama'}</strong> (${item.hp || '-'啰})<br>
+                    Barang: ${item.barang || '-'} | Rp ${item.nominal || 0}<br>
+                    <small>Tanggal: ${item.tanggal || '-'}</small>
+                </div>`;
+            }
+            daftarDiv.innerHTML = html;
+        }
+
+        function filterDataCicilan() {
+            const keyword = document.getElementById('inputCariPelanggan').value.toLowerCase();
+            
+            if (!keyword) {
+                tampilkanDataCicilan(cacheDataCicilan);
+                return;
+            }
+
+            let filtered = {};
+            for (let id in cacheDataCicilan) {
+                let item = cacheDataCicilan[id];
+                let namaPelanggan = (item.nama || "").toLowerCase();
+                let namaBarang = (item.barang || "").toLowerCase();
+                let nomorHp = (item.hp || "").toLowerCase();
+
+                if (namaPelanggan.includes(keyword) || namaBarang.includes(keyword) || nomorHp.includes(keyword)) {
+                    filtered[id] = item;
+                }
+            }
+
+            tampilkanDataCicilan(filtered);
+        }
+
+        // Jalankan fungsi ambil data saat halaman dimuat
+        window.onload = function() {
+            ambilDataCicilan();
+        };
+    </script>
 </body>
-</html>
+</htm
