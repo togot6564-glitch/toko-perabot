@@ -9,10 +9,7 @@
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background: #f4f6f9; }
         h1 { font-size: 20px; color: #2e3650; margin-bottom: 5px; }
-        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-        button, .btn { padding: 10px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 13px; text-align: center; }
-        button:active { background: #230089; }
-        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; display: none; } /* Default tersembunyi kecuali dipilih */
+        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; }
         input, select { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
         .history-item { padding: 10px; border-bottom: 1px solid #eee; }
         .search-box { background: #eef2f7; padding: 10px; border-radius: 6px; margin-bottom: 10px; }
@@ -21,26 +18,10 @@
 <body>
 
     <h1>Pusat Toko Perabot Pro</h1>
-    <p style="font-size: 13px; color: #666;">Kasir, Cicilan, Stok, & Manajemen Toko</p>
+    <p style="font-size: 13px; color: #666;">Buku Pencarian Cicilan Pelanggan</p>
 
-    <!-- Menu Navigasi Tab -->
-    <div class="menu-grid">
-        <button onclick="gantiTab('kas')">🛒 Kas</button>
-        <button onclick="gantiTab('cicilan')">📋 Cicilan</button>
-        <button onclick="gantiTab('stok')">📦 Stok</button>
-        <button onclick="gantiTab('katalog')">📁 Katalog</button>
-        <button onclick="gantiTab('supplier')">🏭 Supplier</button>
-        <button onclick="gantiTab('kurir')">🚚 Kurir</button>
-    </div>
-
-    <!-- Tab Kas (Contoh Halaman Utama Lain) -->
-    <div id="tab-kas" class="card" style="display: block;">
-        <h3>Halaman Kasir</h3>
-        <p>Silakan gunakan menu di atas untuk berpindah ke halaman lain, termasuk buku cicilan.</p>
-    </div>
-
-    <!-- Tab Cicilan (Dilengkapi Kotak Pencarian) -->
-    <div id="tab-cicilan" class="card">
+    <!-- Tab Cicilan Langsung Terbuka Permanen -->
+    <div class="card">
         <h3>Buku Cicilan Pelanggan</h3>
         
         <!-- Kolom Pencarian Pelanggan & No HP -->
@@ -64,19 +45,6 @@
         const db = firebase.database();
 
         let cacheDataCicilan = {};
-
-        // Fungsi Pindah Tab yang Sudah Dirangkaikan
-        function gantiTab(tab) {
-            // Sembunyikan semua tab card
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => card.style.display = 'none');
-
-            // Tampilkan tab yang dipilih
-            const targetTab = document.getElementById('tab-' + tab);
-            if (targetTab) {
-                targetTab.style.display = 'block';
-            }
-        }
 
         // Ambil data dari Firebase secara real-time
         function ambilDataCicilan() {
