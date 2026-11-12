@@ -23,7 +23,7 @@
     <h1>Pusat Toko Perabot Pro</h1>
     <p style="font-size: 13px; color: #666;">Kasir, Cicilan, Stok, & Manajemen Toko</p>
 
-    <!-- Menu Navigasi Tab --> 
+    <!-- Menu Navigasi Tab -->
     <div class="menu-grid">
         <button onclick="gantiTab('kas')">🛒 Kas</button>
         <button onclick="gantiTab('cicilan')">📋 Cicilan</button>
@@ -60,11 +60,10 @@
         let cacheDataCicilan = {};
 
         function gantiTab(tab) {
-            // Logika ganti tab bisa disesuaikan dengan kebutuhan Anda
             console.log("Membuka tab: " + tab);
         }
 
-        // Ambil data dari Firebase saat aplikasi dibuka
+        // Ambil data dari Firebase secara real-time
         function ambilDataCicilan() {
             db.ref('cicilan').on('value', (snapshot) => {
                 const data = snapshot.val();
@@ -73,6 +72,7 @@
             });
         }
 
+        // Tampilkan data ke elemen HTML
         function tampilkanDataCicilan(data) {
             const daftarDiv = document.getElementById('listCicilanPelanggan');
             if (!data || Object.keys(data).length === 0) {
@@ -84,7 +84,7 @@
             for (let id in data) {
                 let item = data[id];
                 html += `<div class="history-item">
-                    <strong>${item.nama || 'Tanpa Nama'}</strong> (${item.hp || '-'啰})<br>
+                    <strong>${item.nama || 'Tanpa Nama'}</strong> (${item.hp || '-'ik})<br>
                     Barang: ${item.barang || '-'} | Rp ${item.nominal || 0}<br>
                     <small>Tanggal: ${item.tanggal || '-'}</small>
                 </div>`;
@@ -92,8 +92,12 @@
             daftarDiv.innerHTML = html;
         }
 
+        // Fungsi Filter Pencarian (Real-time saat diketik)
         function filterDataCicilan() {
-            const keyword = document.getElementById('inputCariPelanggan').value.toLowerCase();
+            const inputElement = document.getElementById('inputCariPelanggan');
+            if (!inputElement) return;
+
+            const keyword = inputElement.value.toLowerCase();
             
             if (!keyword) {
                 tampilkanDataCicilan(cacheDataCicilan);
@@ -115,10 +119,10 @@
             tampilkanDataCicilan(filtered);
         }
 
-        // Jalankan fungsi ambil data saat halaman dimuat
+        // Jalankan saat halaman dimuat
         window.onload = function() {
             ambilDataCicilan();
         };
     </script>
 </body>
-</htm
+</html>
