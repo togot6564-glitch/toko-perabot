@@ -31,7 +31,6 @@
     </div>
 
     <script>
-        // Konfigurasi Firebase
         const firebaseConfig = {
             databaseURL: "https://toko-perabot-default-rtdb.firebaseio.com/"
         };
@@ -43,7 +42,6 @@
 
         let cacheDataCicilan = {};
 
-        // Ambil data dari Firebase
         function ambilDataCicilan() {
             db.ref('cicilan').on('value', (snapshot) => {
                 const data = snapshot.val();
@@ -52,7 +50,6 @@
             });
         }
 
-        // Render atau Tampilkan Data ke Layar
         function tampilkanDataCicilan(data) {
             const daftarDiv = document.getElementById('listCicilanPelanggan');
             if (!data || Object.keys(data).length === 0) {
@@ -72,7 +69,6 @@
             daftarDiv.innerHTML = html;
         }
 
-        // Fungsi Filter Pencarian Real-time
         function filterDataCicilan() {
             const inputElement = document.getElementById('inputCariPelanggan');
             if (!inputElement) return;
@@ -99,7 +95,6 @@
             tampilkanDataCicilan(filtered);
         }
 
-        // Jalankan saat halaman siap
         window.onload = function() {
             ambilDataCicilan();
         };
