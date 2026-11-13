@@ -1,66 +1,150 @@
-!DOCTYPE html>
-<html lang="id">
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-            db.ref('cicilan').on('value', (snapshot) => {
-                html += `<div class="history-item">
-        const db = firebase.database();
-                const data = snapshot.val();
-                
-        .search-box { background: #eef2f7; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
+            <input type="text" id="inputCariPelanggan" class="search-input" oninput="filterDataCicilan()" placeholder="Ketik nama atau nomor HP...">
+                document.getElementById('inputBarang').value = '';
+            alert("Mohon isi Nama, Barang, dan Nominal!");
+        const daftarDiv = document.getElementById('listCicilanPelanggan');
+        let html = "";
+        <input type="number" id="inputHP" class="form-input" placeholder="Nomor HP / WA">
 
-    <div class="card">
-        }
-</head>
+    // Fungsi untuk menyimpan data baru ke Firebase
+                <strong style="font-size:15px;">${item.nama || 'Tanpa Nama'}</strong> 
+        <input type="text" id="inputNama" class="form-input" placeholder="Nama Pelanggan">
 
-        function ambilDataCicilan() {
-        
-        .no-data { color: #666; font-style: italic; text-align: center; padding: 20px 0; }
-        if (!firebase.apps.length) {
-    <style>
-        <div class="search-box">
-            });
-    </div>
-        function filterDataCicilan() {
-        function tampilkanDataCicilan(data) {
-                console.log("Data cicilan berhasil diambil:", cacheDataCicilan);
-        .history-item { padding: 12px 0; border-bottom: 1px solid #eee; }
-            }, (error) => {
-    <meta charset="UTF-8">
-    <title>Pencarian Cicilan - Toko Perabot Pro</title>
-<body>
-        <!-- Daftar Hasil -->
-            const inputElement = document.getElementById('inputCariPelanggan');
-            if (!inputElement) return;
+    let cacheDataCicilan = {};
+                // Kosongkan form
+            html += `<div class="history-item">
+                <span style="color:#666;">(${item.hp || '-'})</span><br>
+        <h2>Tambah Buku Cicilan Baru</h2>
+                document.getElementById('inputHP').value = '';
+        <input type="text" id="inputBarang" class="form-input" placeholder="Nama Barang / Produk">
 
-            // .trim() menghapus spasi di awal/akhir yang tidak sengaja terketik
-            const keyword = inputElement.value.toLowerCase().trim();
-            
-            if (!keyword) {
-                tampilkanDataCicilan(cacheDataCicilan);
-                return;
-            }
-
-            let filtered = {};
-            for (let id in cacheDataCicilan) {
-                let item = cacheDataCicilan[id];
-                
-                // PERBAIKAN PENTING: Gunakan String() agar tidak error jika data berupa angka
-                let namaPelanggan = String(item.nama || "").toLowerCase();
-                let namaBarang = String(item.barang || "").toLowerCase();
-                let nomorHp = String(item.hp || "").toLowerCase();
-
-                // Cek apakah keyword cocok dengan nama, barang, atau nomor HP
-                if (namaPelanggan.includes(keyword) || namaBarang.includes(keyword) || nomorHp.includes(keyword)) {
-                    filtered[id] = item;
-                }
-            }
-
-            tampilkanDataCicilan(filtered);
-        }
-
-        window.onload = function() {
-            ambilDataCicilan();
+    /*
         };
-    </script>
-</body>
-</html>
+        <!-- Tempat menampilkan list data -->
+        // Simpan ke database
+                <span style="color:#333;">Barang: ${item.barang || '-'}</span> | 
+                <small style="color: #888;">📅 Tanggal: ${item.tanggal || '-'}</small>
+
+        
+
+            filterDataCicilan(); // Panggil fungsi filter agar list langsung terupdate
+
+        daftarDiv.innerHTML = html;
+        <input type="number" id="inputNominal" class="form-input" placeholder="Nominal Cicilan (Rp)">
+                document.getElementById('inputNama').value = '';
+    <div class="card-cicilan">
+    <!-- 1. FORM TAMBAH CICILAN -->
+    
+<div class="cicilan-container">
+
+
+        const hp = document.getElementById('inputHP').value.trim();
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+            let item = data[id];
+    };
+            hp: hp,
+    const db = firebase.database();
+                alert("Gagal menyimpan: " + error.message);
+    // Jika belum, tambahkan config ini di paling atas script:
+            .then(() => {
+                alert("Berhasil disimpan!");
+            
+                document.getElementById('inputNominal').value = '';
+                <span style="color:green; font-weight:bold;">Rp ${nominalRapi}</span><br>
+        databaseURL: "https://toko-perabot-default-rtdb.firebaseio.com/"
+    */
+        }
+
+        const dataBaru = {
+        <h2>Daftar Buku Tagihan Pelanggan</h2>
+    }
+    <!-- 2. FITUR PENCARIAN (BARU DITAMBAHKAN) -->
+            <label>🔍 Cari Nama Pelanggan atau No HP:</label>
+            tanggal: new Date().toLocaleDateString('id-ID')
+            })
+    // Fungsi untuk menampilkan data ke layar
+            daftarDiv.innerHTML = "<div class='no-data'>Belum ada data cicilan.</div>";
+        </div>
+            return;
+        
+        for (let id in data) {
+    function simpanCicilanBaru() {
+<script>
+</div>
+    const firebaseConfig = {
+
+        <div id="listCicilanPelanggan" class="no-data">Memuat data...</div>
+        db.ref('cicilan').push(dataBaru)
+            </div>`;
+        db.ref('cicilan').on('value', (snapshot) => {
+        });
+    // Fungsi untuk mengambil data dari Firebase secara realtime
+        <button class="btn-simpan" onclick="simpanCicilanBaru()">📥 Buat Buku Cicilan</button>
+        if (!nama || !barang || !nominal) {
+        const barang = document.getElementById('inputBarang').value.trim();
+            let nominalRapi = Number(item.nominal || 0).toLocaleString('id-ID');
+            barang: barang,
+            });
+            nama: nama,
+        
+
+    <div class="card-cicilan">
+            .catch((error) => {
+    function tampilkanDataCicilan(data) {
+            return;
+
+        }
+        if (!data || Object.keys(data).length === 0) {
+        const nama = document.getElementById('inputNama').value.trim();
+    // Pastikan Firebase sudah diinisialisasi di kode utama aplikasi Anda.
+    </div>
+        }
+            cacheDataCicilan = snapshot.val() || {};
+    }
+    function mulaiDengarDataCicilan() {
+    </div>
+        const nominal = document.getElementById('inputNominal').value.trim();
+            nominal: parseInt(nominal),
+    }
+        <div class="search-box">
+    // Fungsi PENCARIAN (Nama & No HP)
+
+
+        if (typeof db === 'undefined') return; // Cegah error jika db belum siap
+    function filterDataCicilan() {
+        const inputElement = document.getElementById('inputCariPelanggan');
+        if (!inputElement) return;
+
+        const keyword = inputElement.value.toLowerCase().trim();
+        
+        // Jika kotak pencarian kosong, tampilkan SEMUA data
+        if (!keyword) {
+            tampilkanDataCicilan(cacheDataCicilan);
+            return;
+        }
+
+        // Filter data berdasarkan Nama ATAU Nomor HP
+        let filtered = {};
+        for (let id in cacheDataCicilan) {
+            let item = cacheDataCicilan[id];
+            
+            // Gunakan String() agar tidak error jika data berupa angka
+            let namaPelanggan = String(item.nama || "").toLowerCase();
+            let nomorHp = String(item.hp || "").toLowerCase();
+
+            // Cek kecocokan
+            if (namaPelanggan.includes(keyword) || nomorHp.includes(keyword)) {
+                filtered[id] = item;
+            }
+        }
+
+        tampilkanDataCicilan(filtered);
+    }
+    // Jalankan fungsi dengar data saat halaman selesai dimuat
+    window.onload = function() {
+        mulaiDengarDataCicilan();
+
+<!-- SELESAI KODE MENU CICILAN LENGKAP          -->
+<!-- ========================================== -->
+</script>
+    };
+<!-- ========================================== -->
