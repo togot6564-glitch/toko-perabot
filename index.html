@@ -23,33 +23,33 @@
         .item-list { font-size: 12px; border-bottom: 1px solid #e2e8f0; padding: 8px; background: #f8fafc; margin-bottom: 6px; border-radius: 6px; }
         .badge-stok { background: #fee2e2; color: #991b1b; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; }
         .badge-aman { background: #dcfce7; color: #166534; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; }
-        /* Gaya khusus kotak pencarian */
         .box-cari { background: #eef2f7; padding: 10px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #d1d9e6; }
         .box-cari label { font-size: 13px; font-weight: bold; color: #334155; display: block; margin-bottom: 5px; }
         .box-cari input { margin-bottom: 0; background: #fff; }
+        .laporan-box { background: #f0f9ff; padding: 12px; border-radius: 6px; border: 2px solid #0369a1; margin-bottom: 10px; }
+        .laporan-total { font-size: 16px; font-weight: bold; color: #dc2626; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0; }
+        .laporan-detail { padding: 8px; background: #fff; border-radius: 4px; margin-bottom: 5px; font-size: 12px; }
     </style>
 </head>
 <body>
 
     <header>
-        <h2 style="color: white; border: none; margin: 0;">🪑 Pusat Toko Perabot Pro</h2>
+        <h2 style="color: white; border: none; margin: 0;">Pusat Toko Perabot Pro</h2>
         <p style="margin: 2px 0 0; font-size: 0.75rem;">Kasir, Cicilan, Stok, Katalog, Supplier & Kurir</p>
     </header>
 
-    <!-- Menu Navigasi Lengkap (Grid 3 Kolom) -->
     <div class="menu-grid">
-        <div class="menu-btn aktif" onclick="gantiAplikasi('bukukas')">📦 Kas</div>
-        <div class="menu-btn" onclick="gantiAplikasi('kredit')">📋 Cicilan</div>
-        <div class="menu-btn" onclick="gantiAplikasi('stok')">📊 Stok</div>
-        <div class="menu-btn" onclick="gantiAplikasi('katalog')">🏷️ Katalog</div>
-        <div class="menu-btn" onclick="gantiAplikasi('supplier')">📒 Supplier</div>
-        <div class="menu-btn" onclick="gantiAplikasi('kurir')">🚚 Kurir</div>
-        <div class="menu-btn" onclick="gantiAplikasi('kalkulator')">🧮 Margin</div>
-        <div class="menu-btn" onclick="gantiAplikasi('generator')">🎬 TikTok</div>
-        <div class="menu-btn" onclick="gantiAplikasi('kuis')">🎮 Kuis</div>
+        <div class="menu-btn aktif" onclick="gantiAplikasi('bukukas')">Kas</div>
+        <div class="menu-btn" onclick="gantiAplikasi('kredit')">Cicilan</div>
+        <div class="menu-btn" onclick="gantiAplikasi('stok')">Stok</div>
+        <div class="menu-btn" onclick="gantiAplikasi('katalog')">Katalog</div>
+        <div class="menu-btn" onclick="gantiAplikasi('supplier')">Supplier</div>
+        <div class="menu-btn" onclick="gantiAplikasi('kurir')">Kurir</div>
+        <div class="menu-btn" onclick="gantiAplikasi('kalkulator')">Margin</div>
+        <div class="menu-btn" onclick="gantiAplikasi('generator')">TikTok</div>
+        <div class="menu-btn" onclick="gantiAplikasi('kuis')">Kuis</div>
     </div>
 
-    <!-- 1. PANEL BUKU KAS -->
     <div id="panel-bukukas" class="panel aktif">
         <div class="card">
             <h2>Catat Transaksi Kas Harian</h2>
@@ -59,17 +59,16 @@
             </select>
             <input type="text" id="ket-kas" placeholder="Keterangan (Cth: Jual Lemari Plastik)">
             <input type="number" id="nominal-kas" placeholder="Nominal (Rp)">
-            <button class="btn" onclick="simpanKas()">💾 Simpan Kas</button>
+            <button class="btn" onclick="simpanKas()">Simpan Kas</button>
         </div>
         <div class="card">
             <h2>Riwayat Kas & Nota</h2>
             <div id="riwayat-kas" style="min-height: 40px; margin-bottom: 6px;">Belum ada catatan.</div>
-            <button class="btn-cetak" onclick="cetakNota()">🖨️ Cetak Struk Nota</button>
-            <button class="btn-backup" onclick="backupDataDrive()">☁️ Backup Data (JSON)</button>
+            <button class="btn-cetak" onclick="cetakNota()">Cetak Struk Nota</button>
+            <button class="btn-backup" onclick="backupDataDrive()">Backup Data (JSON)</button>
         </div>
     </div>
 
-    <!-- 2. PANEL CICILAN KREDIT (SUDAH DITAMBAHKAN PENCARIAN) -->
     <div id="panel-kredit" class="panel">
         <div class="card">
             <h2>Tambah Buku Cicilan Baru</h2>
@@ -77,27 +76,33 @@
             <input type="text" id="wa-kredit" placeholder="No WA (Cth: 08123456789)">
             <input type="text" id="barang-kredit" placeholder="Nama Barang (Cth: Kasur Busa)">
             <input type="number" id="total-kredit" placeholder="Total Tagihan / Plafon (Rp)">
-            <button class="btn" onclick="simpanKreditBaru()">📥 Buat Buku Cicilan</button>
+            <button class="btn" onclick="simpanKreditBaru()">Buat Buku Cicilan</button>
         </div>
+
+        <!-- LAPORAN PIUTANG BULANAN -->
+        <div class="card" style="background: #f0f9ff;">
+            <h2 style="color: #0369a1;">Laporan Piutang Bulanan</h2>
+            <button class="btn" style="background: #0369a1;" onclick="tampilkanLaporanBulanan()">Lihat Total Piutang</button>
+            <div id="laporan-bulanan" style="margin-top: 10px;"></div>
+        </div>
+
         <div class="card">
             <h2>Daftar Buku Tagihan Pelanggan</h2>
-            <!-- KOTAK PENCARIAN NAMA / NO WA -->
             <div class="box-cari">
-                <label>🔍 Cari Nama Pelanggan atau No WA:</label>
+                <label>Cari Nama Pelanggan atau No WA:</label>
                 <input type="text" id="cari-kredit" oninput="tampilkanKredit()" placeholder="Ketik nama pelanggan...">
             </div>
             <div id="riwayat-kredit" style="min-height: 40px;">Belum ada data cicilan.</div>
         </div>
     </div>
 
-    <!-- 3. PANEL MANAJEMEN STOK -->
     <div id="panel-stok" class="panel">
         <div class="card">
             <h2>Tambah & Kontrol Stok Barang</h2>
             <input type="text" id="nama-barang-stok" placeholder="Nama Barang (Cth: Rak Piring)">
             <input type="number" id="jml-stok" placeholder="Jumlah Stok Saat Ini">
             <input type="number" id="min-stok" placeholder="Peringatan Batas Minimum Stok (Cth: 2)">
-            <button class="btn" onclick="tambahStokBarang()">📦 Simpan Data Stok</button>
+            <button class="btn" onclick="tambahStokBarang()">Simpan Data Stok</button>
         </div>
         <div class="card">
             <h2>Daftar Ketersediaan Stok Toko</h2>
@@ -105,14 +110,13 @@
         </div>
     </div>
 
-    <!-- 4. PANEL KATALOG HARGA & ETALASE -->
     <div id="panel-katalog" class="panel">
         <div class="card">
             <h2>Daftar Harga & Katalog Siap WA</h2>
             <input type="text" id="kat-nama" placeholder="Nama Barang (Cth: Lemari 3 Pintu)">
             <input type="number" id="kat-harga" placeholder="Harga Jual (Rp)">
             <input type="text" id="kat-ket" placeholder="Keterangan (Cth: Kayu Jati Asli / Ready)">
-            <button class="btn" onclick="tambahKatalog()">🏷️ Tambah ke Katalog</button>
+            <button class="btn" onclick="tambahKatalog()">Tambah ke Katalog</button>
         </div>
         <div class="card">
             <h2>Etalase Produk Toko</h2>
@@ -120,7 +124,6 @@
         </div>
     </div>
 
-    <!-- 5. PANEL HUTANG SUPPLIER / GROSIR -->
     <div id="panel-supplier" class="panel">
         <div class="card">
             <h2>Catatan Hutang Kulakan ke Supplier</h2>
@@ -128,7 +131,7 @@
             <input type="text" id="sup-barang" placeholder="Barang Kulakan (Cth: 10 Unit Kasur)">
             <input type="number" id="sup-hutang" placeholder="Jumlah Hutang Tempo (Rp)">
             <input type="text" id="sup-tempo" placeholder="Jatuh Tempo (Cth: 25 November)">
-            <button class="btn" onclick="tambahSupplier()">📒 Simpan Hutang Supplier</button>
+            <button class="btn" onclick="tambahSupplier()">Simpan Hutang Supplier</button>
         </div>
         <div class="card">
             <h2>Daftar Kewajiban Tempo Toko</h2>
@@ -136,7 +139,6 @@
         </div>
     </div>
 
-    <!-- 6. PANEL PENGIRIMAN & ONGKIR -->
     <div id="panel-kurir" class="panel">
         <div class="card">
             <h2>Catat Pengiriman & Ongkir Barang</h2>
@@ -148,7 +150,7 @@
                 <option value="Sedang Diantar Kurir">Sedang Diantar Kurir</option>
                 <option value="Selesai / Sampai Tujuan">Selesai / Sampai Tujuan</option>
             </select>
-            <button class="btn" onclick="tambahKurir()">🚚 Catat Pengiriman</button>
+            <button class="btn" onclick="tambahKurir()">Catat Pengiriman</button>
         </div>
         <div class="card">
             <h2>Status Pengiriman Barang</h2>
@@ -156,7 +158,6 @@
         </div>
     </div>
 
-    <!-- 7. PANEL KALKULATOR MARGIN -->
     <div id="panel-kalkulator" class="panel">
         <div class="card">
             <h2>Kalkulator Margin Keuntungan</h2>
@@ -167,18 +168,16 @@
         </div>
     </div>
 
-    <!-- 8. PANEL SKRIP TIKTOK -->
     <div id="panel-generator" class="panel">
         <div class="card">
             <h2>Generator Skrip Konten TikTok</h2>
             <input type="text" id="gen-produk" placeholder="Nama Produk (Cth: Rak Piring)">
             <input type="text" id="gen-keunggulan" placeholder="Keunggulan (Cth: Anti Karat)">
-            <button class="btn" onclick="buatSkrip()">✨ Buat Skrip Otomatis</button>
+            <button class="btn" onclick="buatSkrip()">Buat Skrip Otomatis</button>
             <div id="hasil-skrip" style="margin-top: 8px; font-size: 12px; background: #f1f5f9; padding: 8px; border-radius: 6px;"></div>
         </div>
     </div>
 
-    <!-- 9. PANEL KUIS -->
     <div id="panel-kuis" class="panel">
         <div class="card">
             <h2>Kuis Seputar Usaha Toko</h2>
@@ -214,13 +213,12 @@
             event.currentTarget.classList.add('aktif');
         }
 
-        // FUNGSI KAS
         function simpanKas() {
             let jenis = document.getElementById('jenis-kas').value;
             let ket = document.getElementById('ket-kas').value || 'Tanpa Keterangan';
             let nominal = document.getElementById('nominal-kas').value;
             if(!nominal) { alert('Masukkan nominal angka!'); return; }
-            dataTransaksi.push(`• [${jenis}] ${ket} - Rp ${Number(nominal).toLocaleString('id-ID')}`);
+            dataTransaksi.push('[' + jenis + '] ' + ket + ' - Rp ' + Number(nominal).toLocaleString('id-ID'));
             localStorage.setItem('toko_kas', JSON.stringify(dataTransaksi));
             tampilkanKas();
             document.getElementById('ket-kas').value = '';
@@ -228,7 +226,7 @@
         }
         function tampilkanKas() {
             let r = document.getElementById('riwayat-kas');
-            r.innerHTML = dataTransaksi.length === 0 ? 'Belum ada catatan.' : dataTransaksi.map((item, idx) => `<div class="item-list">${item} <button style="float:right; background:#dc2626; color:white; border:none; padding:2px 5px; border-radius:3px; cursor:pointer;" onclick="hapusKas(${idx})">Hapus</button></div>`).join('');
+            r.innerHTML = dataTransaksi.length === 0 ? 'Belum ada catatan.' : dataTransaksi.map((item, idx) => '<div class="item-list">' + item + ' <button style="float:right; background:#dc2626; color:white; border:none; padding:2px 5px; border-radius:3px; cursor:pointer;" onclick="hapusKas(' + idx + ')">Hapus</button></div>').join('');
         }
         function hapusKas(idx) { dataTransaksi.splice(idx, 1); localStorage.setItem('toko_kas', JSON.stringify(dataTransaksi)); tampilkanKas(); }
         function cetakNota() {
@@ -248,7 +246,6 @@
             alert('File backup berhasil diunduh!');
         }
 
-        // FUNGSI KREDIT
         function simpanKreditBaru() {
             let nama = document.getElementById('nama-kredit').value;
             let wa = document.getElementById('wa-kredit').value;
@@ -257,7 +254,6 @@
             if(!nama || !total) { alert('Nama dan total tagihan wajib diisi!'); return; }
             dataKredit.push({ nama, wa: wa||'', barang: barang||'Perabot', sisa: Number(total), riwayat: [] });
             localStorage.setItem('toko_kredit', JSON.stringify(dataKredit));
-            // Kosongkan kotak pencarian saat tambah baru agar data baru langsung terlihat
             let cariEl = document.getElementById('cari-kredit'); if(cariEl) cariEl.value = '';
             tampilkanKredit();
             document.getElementById('nama-kredit').value = ''; document.getElementById('wa-kredit').value = ''; document.getElementById('barang-kredit').value = ''; document.getElementById('total-kredit').value = '';
@@ -268,11 +264,10 @@
             let b = Number(bayar);
             if(b > dataKredit[idx].sisa) { alert('Jumlah melebihi sisa tagihan!'); return; }
             dataKredit[idx].sisa -= b;
-            dataKredit[idx].riwayat.push(`Bayar Rp ${b.toLocaleString('id-ID')} (${new Date().toLocaleDateString('id-ID')})`);
+            dataKredit[idx].riwayat.push('Bayar Rp ' + b.toLocaleString('id-ID') + ' (' + new Date().toLocaleDateString('id-ID') + ')');
             localStorage.setItem('toko_kredit', JSON.stringify(dataKredit));
             tampilkanKredit();
         }
-        // ====== FUNGSI TAMPIL + PENCARIAN (YANG DIPERBAIKI) ======
         function tampilkanKredit() {
             let r = document.getElementById('riwayat-kredit');
             let cariEl = document.getElementById('cari-kredit');
@@ -285,27 +280,61 @@
 
             let hasil = '';
             let ketemu = 0;
-            // Pakai index ASLI (idx) agar tombol Bayar/Hapus tetap benar walau difilter
             dataKredit.forEach((k, idx) => {
                 let namaLower = String(k.nama || '').toLowerCase();
                 let waLower = String(k.wa || '').toLowerCase();
                 let cocok = !keyword || namaLower.includes(keyword) || waLower.includes(keyword);
                 if (!cocok) return;
                 ketemu++;
-                let waLink = k.wa ? `<a href="https://wa.me/${k.wa.replace(/^0/, '62')}?text=${encodeURIComponent('Halo Kak '+k.nama+', sisa cicilan '+k.barang+' di toko perabot adalah Rp '+k.sisa.toLocaleString('id-ID')+'. Terima kasih!')}" target="_blank" style="text-decoration:none;"><button class="btn-wa">💬 WA Pelanggan</button></a>` : '';
+                let waLink = k.wa ? '<a href="https://wa.me/' + k.wa.replace(/^0/, '62') + '?text=' + encodeURIComponent('Halo Kak ' + k.nama + ', sisa cicilan ' + k.barang + ' di toko perabot adalah Rp ' + k.sisa.toLocaleString('id-ID') + '. Terima kasih!') + '" target="_blank" style="text-decoration:none;"><button class="btn-wa">WA Pelanggan</button></a>' : '';
                 let hist = k.riwayat && k.riwayat.length > 0 ? k.riwayat.join('<br>') : 'Belum ada cicilan masuk';
-                hasil += `<div class="item-list"><b>👤 ${k.nama}</b> ${k.wa?'('+k.wa+')':''}<br>Barang: ${k.barang}<br>Sisa: <b style="color:var(--danger);">Rp ${k.sisa.toLocaleString('id-ID')}</b><br><div style="font-size:11px;color:#64748b;margin:3px 0;background:#fff;padding:4px;border-radius:4px;"><b>Riwayat:</b><br>${hist}</div><button class="btn" style="padding:5px;font-size:11px;background:var(--success);margin-top:2px;" onclick="bayarAngsuran(${idx})">💵 Catat Bayar</button>${waLink}<button style="margin-top:2px;background:var(--danger);color:white;border:none;padding:5px;border-radius:4px;cursor:pointer;width:100%;font-weight:bold;font-size:11px;" onclick="hapusKredit(${idx})">❌ Lunas / Hapus</button></div>`;
+                hasil += '<div class="item-list"><b>' + k.nama + '</b> ' + (k.wa ? '(' + k.wa + ')' : '') + '<br>Barang: ' + k.barang + '<br>Sisa: <b style="color:var(--danger);">Rp ' + k.sisa.toLocaleString('id-ID') + '</b><br><div style="font-size:11px;color:#64748b;margin:3px 0;background:#fff;padding:4px;border-radius:4px;"><b>Riwayat:</b><br>' + hist + '</div><button class="btn" style="padding:5px;font-size:11px;background:var(--success);margin-top:2px;" onclick="bayarAngsuran(' + idx + ')">Catat Bayar</button>' + waLink + '<button style="margin-top:2px;background:var(--danger);color:white;border:none;padding:5px;border-radius:4px;cursor:pointer;width:100%;font-weight:bold;font-size:11px;" onclick="hapusKredit(' + idx + ')">Lunas / Hapus</button></div>';
             });
 
             if (ketemu === 0) {
-                r.innerHTML = `<div class="item-list" style="text-align:center;color:#64748b;">🔍 Tidak ditemukan pelanggan dengan nama/No WA "<b>${keyword}</b>".</div>`;
+                r.innerHTML = '<div class="item-list" style="text-align:center;color:#64748b;">Tidak ditemukan pelanggan dengan nama/No WA "' + keyword + '".</div>';
             } else {
                 r.innerHTML = hasil;
             }
         }
         function hapusKredit(idx) { if(confirm('Hapus atau lunasi data ini?')) { dataKredit.splice(idx, 1); localStorage.setItem('toko_kredit', JSON.stringify(dataKredit)); tampilkanKredit(); } }
 
-        // FUNGSI STOK
+        // ====== FUNGSI LAPORAN PIUTANG BULANAN ======
+        function tampilkanLaporanBulanan() {
+            let laporanDiv = document.getElementById('laporan-bulanan');
+            
+            if (dataKredit.length === 0) {
+                laporanDiv.innerHTML = '<div style="text-align:center; color:#64748b;">Belum ada data cicilan.</div>';
+                return;
+            }
+            
+            let totalPiutang = 0;
+            let pelangganMasihHutang = 0;
+            let detailHTML = '';
+            
+            dataKredit.forEach((k, idx) => {
+                if (k.sisa > 0) {
+                    totalPiutang += k.sisa;
+                    pelangganMasihHutang++;
+                    detailHTML += '<div class="laporan-detail"><b>' + k.nama + '</b> ' + (k.wa ? '(' + k.wa + ')' : '') + '<br>Barang: ' + k.barang + ' | Sisa: <b style="color:#dc2626;">Rp ' + k.sisa.toLocaleString('id-ID') + '</b></div>';
+                }
+            });
+            
+            let html = '<div class="laporan-box">' +
+                '<div style="font-size: 14px; font-weight: bold; color: #0369a1; margin-bottom: 8px;">Laporan Bulan Ini</div>' +
+                '<div style="font-size: 13px; margin-bottom: 5px;">Pelanggan Masih Hutang: <b>' + pelangganMasihHutang + ' orang</b></div>' +
+                '<div class="laporan-total">Total Piutang: Rp ' + totalPiutang.toLocaleString('id-ID') + '</div>' +
+                '</div>';
+            
+            if (pelangganMasihHutang > 0) {
+                html += '<div style="margin-top: 10px;"><b style="font-size: 12px;">Rincian:</b>' + detailHTML + '</div>';
+            } else {
+                html += '<div style="text-align:center; color:#16a34a; margin-top:10px; font-weight:bold;">Semua cicilan sudah lunas!</div>';
+            }
+            
+            laporanDiv.innerHTML = html;
+        }
+
         function tambahStokBarang() {
             let nama = document.getElementById('nama-barang-stok').value;
             let jml = document.getElementById('jml-stok').value;
@@ -325,12 +354,11 @@
         function tampilkanStok() {
             let r = document.getElementById('riwayat-stok');
             r.innerHTML = dataStok.length === 0 ? 'Belum ada data stok.' : dataStok.map((s, idx) => {
-                let status = s.jml <= s.min ? `<span class="badge-stok">⚠️ Stok Menipis!</span>` : `<span class="badge-aman">Stok Aman</span>`;
-                return `<div class="item-list"><b>📦 ${s.nama}</b><br>Jumlah: <b>${s.jml} Unit</b> ${status}<br><button class="btn" style="padding:4px;font-size:11px;background:var(--success);display:inline-block;width:48%;margin-top:3px;" onclick="updateStok(${idx}, 1)">➕ Tambah 1</button> <button class="btn" style="padding:4px;font-size:11px;background:var(--danger);display:inline-block;width:48%;margin-top:3px;" onclick="updateStok(${idx}, -1)">➖ Kurang 1</button></div>`;
+                let status = s.jml <= s.min ? '<span class="badge-stok">Stok Menipis!</span>' : '<span class="badge-aman">Stok Aman</span>';
+                return '<div class="item-list"><b>' + s.nama + '</b><br>Jumlah: <b>' + s.jml + ' Unit</b> ' + status + '<br><button class="btn" style="padding:4px;font-size:11px;background:var(--success);display:inline-block;width:48%;margin-top:3px;" onclick="updateStok(' + idx + ', 1)">Tambah 1</button> <button class="btn" style="padding:4px;font-size:11px;background:var(--danger);display:inline-block;width:48%;margin-top:3px;" onclick="updateStok(' + idx + ', -1)">Kurang 1</button></div>';
             }).join('');
         }
 
-        // FUNGSI KATALOG
         function tambahKatalog() {
             let nama = document.getElementById('kat-nama').value;
             let harga = document.getElementById('kat-harga').value;
@@ -344,13 +372,12 @@
         function tampilkanKatalog() {
             let r = document.getElementById('riwayat-katalog');
             r.innerHTML = dataKatalog.length === 0 ? 'Belum ada katalog.' : dataKatalog.map((k, idx) => {
-                let pesanWa = `Halo Kak, berikut info produk toko kami:\n🔹 *${k.nama}*\n💰 Harga: Rp ${k.harga.toLocaleString('id-ID')}\n📌 Keterangan: ${k.ket}\n\nMinat? Silakan hubungi kami!`;
-                return `<div class="item-list"><b>🏷️ ${k.nama}</b><br>Harga: <b style="color:var(--primary);">Rp ${k.harga.toLocaleString('id-ID')}</b><br>Ket: ${k.ket}<br><a href="https://wa.me/?text=${encodeURIComponent(pesanWa)}" target="_blank" style="text-decoration:none;"><button class="btn-wa">📤 Bagikan ke WA</button></a> <button style="background:var(--danger);color:white;border:none;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:11px;float:right;" onclick="hapusKatalog(${idx})">Hapus</button></div>`;
+                let pesanWa = 'Halo Kak, berikut info produk toko kami:\n* ' + k.nama + '*\nHarga: Rp ' + k.harga.toLocaleString('id-ID') + '\nKeterangan: ' + k.ket + '\n\nMinat? Silakan hubungi kami!';
+                return '<div class="item-list"><b>' + k.nama + '</b><br>Harga: <b style="color:var(--primary);">Rp ' + k.harga.toLocaleString('id-ID') + '</b><br>Ket: ' + k.ket + '<br><a href="https://wa.me/?text=' + encodeURIComponent(pesanWa) + '" target="_blank" style="text-decoration:none;"><button class="btn-wa">Bagikan ke WA</button></a> <button style="background:var(--danger);color:white;border:none;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:11px;float:right;" onclick="hapusKatalog(' + idx + ')">Hapus</button></div>';
             }).join('');
         }
         function hapusKatalog(idx) { dataKatalog.splice(idx, 1); localStorage.setItem('toko_katalog', JSON.stringify(dataKatalog)); tampilkanKatalog(); }
 
-        // FUNGSI SUPPLIER
         function tambahSupplier() {
             let nama = document.getElementById('sup-nama').value;
             let barang = document.getElementById('sup-barang').value;
@@ -364,11 +391,10 @@
         }
         function tampilkanSupplier() {
             let r = document.getElementById('riwayat-supplier');
-            r.innerHTML = dataSupplier.length === 0 ? 'Belum ada data hutang supplier.' : dataSupplier.map((s, idx) => `<div class="item-list"><b>🏢 ${s.nama}</b><br>Barang: ${s.barang}<br>Hutang Tempo: <b style="color:var(--danger);">Rp ${s.hutang.toLocaleString('id-ID')}</b><br>Jatuh Tempo: <b>${s.tempo}</b><br><button style="background:var(--success);color:white;border:none;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:11px;margin-top:3px;width:100%;font-weight:bold;" onclick="hapusSupplier(${idx})">✅ Lunas / Hapus</button></div>`).join('');
+            r.innerHTML = dataSupplier.length === 0 ? 'Belum ada data hutang supplier.' : dataSupplier.map((s, idx) => '<div class="item-list"><b>' + s.nama + '</b><br>Barang: ' + s.barang + '<br>Hutang Tempo: <b style="color:var(--danger);">Rp ' + s.hutang.toLocaleString('id-ID') + '</b><br>Jatuh Tempo: <b>' + s.tempo + '</b><br><button style="background:var(--success);color:white;border:none;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:11px;margin-top:3px;width:100%;font-weight:bold;" onclick="hapusSupplier(' + idx + ')">Lunas / Hapus</button></div>').join('');
         }
         function hapusSupplier(idx) { dataSupplier.splice(idx, 1); localStorage.setItem('toko_supplier', JSON.stringify(dataSupplier)); tampilkanSupplier(); }
 
-        // FUNGSI KURIR
         function tambahKurir() {
             let tujuan = document.getElementById('kurir-tujuan').value;
             let barang = document.getElementById('kurir-barang').value;
@@ -382,11 +408,10 @@
         }
         function tampilkanKurir() {
             let r = document.getElementById('riwayat-kurir');
-            r.innerHTML = dataKurir.length === 0 ? 'Belum ada data pengiriman.' : dataKurir.map((k, idx) => `<div class="item-list"><b>🚚 ${k.tujuan}</b><br>Barang: ${k.barang}<br>Ongkir: Rp ${k.ongkir.toLocaleString('id-ID')}<br>Status: <b style="color:var(--warning);">${k.status}</b><br><button style="background:var(--danger);color:white;border:none;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:11px;margin-top:3px;width:100%;font-weight:bold;" onclick="hapusKurir(${idx})">❌ Hapus Selesai</button></div>`).join('');
+            r.innerHTML = dataKurir.length === 0 ? 'Belum ada data pengiriman.' : dataKurir.map((k, idx) => '<div class="item-list"><b>' + k.tujuan + '</b><br>Barang: ' + k.barang + '<br>Ongkir: Rp ' + k.ongkir.toLocaleString('id-ID') + '<br>Status: <b style="color:var(--warning);">' + k.status + '</b><br><button style="background:var(--danger);color:white;border:none;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:11px;margin-top:3px;width:100%;font-weight:bold;" onclick="hapusKurir(' + idx + ')">Hapus Selesai</button></div>').join('');
         }
         function hapusKurir(idx) { dataKurir.splice(idx, 1); localStorage.setItem('toko_kurir', JSON.stringify(dataKurir)); tampilkanKurir(); }
 
-        // FUNGSI LAINNYA
         function hitungProfit() {
             let modal = Number(document.getElementById('modal-barang').value);
             let jual = Number(document.getElementById('jual-barang').value);
@@ -394,12 +419,12 @@
             if(!modal || !jual) { h.innerHTML = 'Isi modal dan harga jual!'; return; }
             let untung = jual - modal;
             let persentase = ((untung / modal) * 100).toFixed(1);
-            h.innerHTML = `Keuntungan: Rp ${untung.toLocaleString('id-ID')} (${persentase}%)`;
+            h.innerHTML = 'Keuntungan: Rp ' + untung.toLocaleString('id-ID') + ' (' + persentase + '%)';
         }
         function buatSkrip() {
             let p = document.getElementById('gen-produk').value || 'Produk Toko';
             let k = document.getElementById('gen-keunggulan').value || 'Berkualitas';
-            document.getElementById('hasil-skrip').innerHTML = `<b>Hook (3 Detik Pertama):</b><br>"Nyesel banget baru tahu ${p} ini bikin rumah jadi rapi!"<br><br><b>Isi Promosi:</b><br>Nih, ${p} keunggulannya ${k}. Dijamin awet dan kokoh!<br><br><b>CTA:</b><br>"Yuk diorder sebelum kehabisan, cek link di bio ya!"`;
+            document.getElementById('hasil-skrip').innerHTML = '<b>Hook (3 Detik Pertama):</b><br>"Nyesel banget baru tahu ' + p + ' ini bikin rumah jadi rapi!"<br><br><b>Isi Promosi:</b><br>Nih, ' + p + ' keunggulannya ' + k + '. Dijamin awet dan kokoh!<br><br><b>CTA:</b><br>"Yuk diorder sebelum kehabisan, cek link di bio ya!"';
         }
         const soalKuis = [
             { tanya: "Bahasa pemrograman web untuk kerangka halaman adalah?", opsi: ["CSS", "HTML", "JavaScript"], jawaban: 1 },
@@ -411,14 +436,14 @@
                 document.getElementById('kuis-info').innerHTML = "Kuis Selesai!";
                 document.getElementById('kuis-tanya').innerHTML = "";
                 document.getElementById('kuis-opsi').innerHTML = "";
-                document.getElementById('kuis-skor').innerHTML = `Skor Akhir: ${skorKuis} dari ${soalKuis.length}`;
+                document.getElementById('kuis-skor').innerHTML = 'Skor Akhir: ' + skorKuis + ' dari ' + soalKuis.length;
                 return;
             }
             let s = soalKuis[idxSoal];
-            document.getElementById('kuis-info').innerHTML = `Soal ${idxSoal + 1} dari ${soalKuis.length}`;
+            document.getElementById('kuis-info').innerHTML = 'Soal ' + (idxSoal + 1) + ' dari ' + soalKuis.length;
             document.getElementById('kuis-tanya').innerHTML = s.tanya;
             let html = '';
-            s.opsi.forEach((opsi, i) => { html += `<button class="btn" style="background:#e2e8f0; color:#334155; margin-bottom:4px; font-size:12px;" onclick="jawabKuis(${i})">${opsi}</button>`; });
+            s.opsi.forEach((opsi, i) => { html += '<button class="btn" style="background:#e2e8f0; color:#334155; margin-bottom:4px; font-size:12px;" onclick="jawabKuis(' + i + ')">' + opsi + '</button>'; });
             document.getElementById('kuis-opsi').innerHTML = html;
         }
         function jawabKuis(pilihan) {
