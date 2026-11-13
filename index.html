@@ -15,6 +15,8 @@
         button.btn-cetak { width: 100%; padding: 9px; background: #475569; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 4px; font-size: 13px; }
         button.btn-backup { width: 100%; padding: 12px; background: var(--success); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 6px; font-size: 14px; }
         button.btn-restore { width: 100%; padding: 12px; background: #d97706; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 6px; font-size: 14px; }
+        button.btn-copy { width: 100%; padding: 12px; background: #7c3aed; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 6px; font-size: 14px; }
+        button.btn-paste { width: 100%; padding: 12px; background: #7c3aed; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 6px; font-size: 14px; }
         button.btn-wa { background: #25d366; color: white; border: none; padding: 5px 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; margin-top: 3px; display: inline-block; text-decoration: none; }
         .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 10px; }
         .menu-btn { padding: 8px 4px; background: white; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: bold; text-align: center; cursor: pointer; color: var(--primary); font-size: 11px; }
@@ -30,8 +32,10 @@
         .laporan-box { background: #f0f9ff; padding: 12px; border-radius: 6px; border: 2px solid #0369a1; margin-bottom: 10px; }
         .laporan-total { font-size: 18px; font-weight: bold; color: #dc2626; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0; }
         .btn-tambah-utang { background: #d97706; color: white; border: none; padding: 5px 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; margin-top: 3px; margin-right: 3px; }
-        .panduan-restore { background: #fef3c7; padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 12px; color: #92400e; border-left: 4px solid #d97706; }
-        .panduan-restore b { display: block; margin-bottom: 5px; }
+        .panduan-backup { background: #fef3c7; padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 12px; color: #92400e; border-left: 4px solid #d97706; }
+        .panduan-backup b { display: block; margin-bottom: 5px; }
+        .panduan-backup ol { margin: 5px 0; padding-left: 20px; }
+        textarea.json-area { width: 100%; height: 150px; font-family: monospace; font-size: 11px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; margin-top: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -68,8 +72,12 @@
             <h2>Riwayat Kas & Nota</h2>
             <div id="riwayat-kas" style="min-height: 40px; margin-bottom: 6px;">Belum ada catatan.</div>
             <button class="btn-cetak" onclick="cetakNota()">Cetak Struk Nota</button>
-            <button class="btn-backup" onclick="backupSemuaData()">💾 Backup Semua Data</button>
-            <button class="btn-restore" onclick="restoreSemuaData()">📥 Pulihkan Semua Data</button>
+            <button class="btn-copy" onclick="copySemuaData()">📋 Salin Semua Data ke Clipboard</button>
+            <button class="btn-paste" onclick="showPasteSemua()">📥 Tempel & Pulihkan Semua Data</button>
+            <div id="pasteAreaSemua" style="display:none;">
+                <textarea class="json-area" id="jsonInputSemua" placeholder="Tempel (paste) data di sini..."></textarea>
+                <button class="btn-restore" onclick="prosesPasteSemua()">✅ Pulihkan Data Ini</button>
+            </div>
         </div>
     </div>
 
@@ -87,16 +95,32 @@
             <h2 style="color: #0369a1;">Laporan Piutang Bulanan</h2>
             <button class="btn" style="background: #0369a1;" onclick="tampilkanLaporanBulanan()">Lihat Total Piutang</button>
             <div id="laporan-bulanan" style="margin-top: 10px;"></div>
-            <button class="btn-backup" style="margin-top: 10px; background: #059669;" onclick="backupKhususCicilan()">💾 Backup Data Cicilan</button>
-            <button class="btn-restore" onclick="restoreKhususCicilan()">📥 Pulihkan Data Cicilan</button>
             
-            <div class="panduan-restore">
-                <b>⚠️ PENTING - Cara Download yang Benar dari Google Drive:</b>
-                1. Buka Google Drive di <b>browser Chrome</b> (bukan aplikasi)<br>
-                2. <b>Klik kanan</b> pada file backup → pilih <b>"Download"</b><br>
-                3. <b>JANGAN</b> klik dua kali (itu hanya preview HTML)<br>
-                4. Pastikan file berakhiran <b>.json</b>, bukan .html<br>
-                5. Setelah didownload, klik tombol "Pulihkan Data" di atas
+            <!-- CARA BARU: COPY-PASTE (TANPA GOOGLE DRIVE) -->
+            <button class="btn-copy" onclick="copyKhususCicilan()">📋 Salin Data Cicilan ke Clipboard</button>
+            <button class="btn-paste" onclick="showPasteCicilan()">📥 Tempel & Pulihkan Data Cicilan</button>
+            <div id="pasteAreaCicilan" style="display:none;">
+                <textarea class="json-area" id="jsonInputCicilan" placeholder="Tempel (paste) data di sini..."></textarea>
+                <button class="btn-restore" onclick="prosesPasteCicilan()">✅ Pulihkan Data Ini</button>
+            </div>
+
+            <div class="panduan-backup">
+                <b>📱 Cara Backup & Restore MUDAH (Tanpa Google Drive):</b>
+                <b>Untuk BACKUP (Simpan Data):</b>
+                <ol>
+                    <li>Klik tombol <b>"📋 Salin Data Cicilan"</b> di atas</li>
+                    <li>Data otomatis ter-copy ke clipboard</li>
+                    <li>Buka WhatsApp/Notes/Email → paste ke sana</li>
+                    <li>Simpan pesan itu (jangan dihapus!)</li>
+                </ol>
+                <b>Untuk RESTORE (Pulihkan Data di HP baru):</b>
+                <ol>
+                    <li>Buka WhatsApp/Notes tempat Anda simpan data</li>
+                    <li>Copy seluruh teks data</li>
+                    <li>Klik tombol <b>"📥 Tempel & Pulihkan"</b> di atas</li>
+                    <li>Paste data di kotak yang muncul</li>
+                    <li>Klik "✅ Pulihkan Data Ini"</li>
+                </ol>
             </div>
         </div>
 
@@ -202,9 +226,6 @@
         </div>
     </div>
 
-    <input type="file" id="fileRestoreCicilan" accept=".json" style="display:none;" onchange="prosesRestoreCicilan(event)">
-    <input type="file" id="fileRestoreSemua" accept=".json" style="display:none;" onchange="prosesRestoreSemua(event)">
-
     <script>
         let dataTransaksi = JSON.parse(localStorage.getItem('toko_kas')) || [];
         let dataKredit = JSON.parse(localStorage.getItem('toko_kredit')) || [];
@@ -258,18 +279,14 @@
             setTimeout(() => { w.print(); w.close(); }, 500);
         }
 
-        // ====== FITUR BACKUP & RESTORE (DIPERBAIKI) ======
-        function backupSemuaData() {
-            let obj = { kas: dataTransaksi, kredit: dataKredit, stok: dataStok, katalog: dataKatalog, supplier: dataSupplier, kurir: dataKurir, tgl: new Date().toLocaleString() };
-            let blob = new Blob([JSON.stringify(obj, null, 2)], {type: 'application/json'});
-            let a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "backup_lengkap_toko_perabot.json"; a.click();
-            alert('✅ File backup lengkap berhasil diunduh!\n\nPENTING: Saat upload ke Google Drive, JANGAN buka file dengan Google Docs. Cukup simpan sebagai file biasa.');
-        }
-
-        function backupKhususCicilan() {
-            if(dataKredit.length === 0) { alert('Belum ada data cicilan untuk dibackup!'); return; }
+        // ====== FITUR BARU: COPY-PASTE BACKUP (TANPA GOOGLE DRIVE) ======
+        
+        function copyKhususCicilan() {
+            if(dataKredit.length === 0) { alert('Belum ada data cicilan untuk disalin!'); return; }
+            
             let totalPiutang = 0;
             dataKredit.forEach(k => { if(k.sisa > 0) totalPiutang += k.sisa; });
+            
             let obj = {
                 judul: "DATA PIUTANG & NASABAH TOKO PERABOT",
                 tanggal_backup: new Date().toLocaleString(),
@@ -277,139 +294,159 @@
                 total_piutang_aktif: totalPiutang,
                 daftar_nasabah: dataKredit
             };
-            let blob = new Blob([JSON.stringify(obj, null, 2)], {type: 'application/json'});
-            let a = document.createElement('a'); 
-            a.href = URL.createObjectURL(blob); 
-            a.download = "BACKUP_CICILAN_NASABAH_" + new Date().toISOString().slice(0,10) + ".json"; 
-            a.click();
-            alert('✅ File backup data cicilan berhasil diunduh!\n\nPENTING: Saat upload ke Google Drive, JANGAN buka file dengan Google Docs. Cukup simpan sebagai file biasa.');
-        }
-
-        function restoreKhususCicilan() {
-            document.getElementById('fileRestoreCicilan').click();
-        }
-
-        function prosesRestoreCicilan(event) {
-            let file = event.target.files[0];
-            if(!file) return;
             
-            // Cek apakah file benar-benar JSON
-            if(!file.name.toLowerCase().endsWith('.json')) {
-                alert('❌ FILE SALAH!\n\nFile harus berakhiran .json\n\nFile Anda: ' + file.name + '\n\nCara yang benar:\n1. Buka Google Drive di browser Chrome\n2. Klik KANAN file backup\n3. Pilih "Download" (bukan klik dua kali)\n4. Pilih file .json yang didownload');
-                event.target.value = '';
+            let jsonText = JSON.stringify(obj, null, 2);
+            
+            // Copy ke clipboard
+            navigator.clipboard.writeText(jsonText).then(function() {
+                alert('✅ BERHASIL DISALIN!\n\nData cicilan (' + dataKredit.length + ' nasabah) sudah ter-copy ke clipboard.\n\nSEKARANG:\n1. Buka WhatsApp/Notes/Email\n2. Paste (tempel) di sana\n3. Simpan pesan itu (jangan dihapus!)\n\nData aman tersimpan di WhatsApp/Notes Anda.');
+            }).catch(function(err) {
+                // Fallback jika clipboard API tidak support
+                let textarea = document.createElement('textarea');
+                textarea.value = jsonText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('✅ BERHASIL DISALIN!\n\nData cicilan (' + dataKredit.length + ' nasabah) sudah ter-copy.\n\nSEKARANG:\n1. Buka WhatsApp/Notes/Email\n2. Paste (tempel) di sana\n3. Simpan pesan itu!');
+                } catch(e) {
+                    alert('❌ Gagal copy otomatis.\n\nSilakan copy manual dari kotak teks yang muncul.');
+                    let popup = window.open('', '_blank');
+                    popup.document.write('<pre>' + jsonText + '</pre>');
+                }
+                document.body.removeChild(textarea);
+            });
+        }
+
+        function showPasteCicilan() {
+            let area = document.getElementById('pasteAreaCicilan');
+            area.style.display = area.style.display === 'none' ? 'block' : 'none';
+            if(area.style.display === 'block') {
+                document.getElementById('jsonInputCicilan').focus();
+            }
+        }
+
+        function prosesPasteCicilan() {
+            let jsonText = document.getElementById('jsonInputCicilan').value.trim();
+            
+            if(!jsonText) {
+                alert('❌ Kotak masih kosong!\n\nSilakan paste data dari WhatsApp/Notes dulu.');
                 return;
             }
             
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                let isiFile = e.target.result;
+            try {
+                let data = JSON.parse(jsonText);
+                let daftarNasabah = null;
                 
-                // Cek apakah isi file adalah HTML (bukan JSON)
-                if(isiFile.trim().startsWith('<') || isiFile.includes('<!DOCTYPE') || isiFile.includes('<html')) {
-                    alert('❌ FILE BUKAN JSON!\n\nFile yang Anda pilih adalah file HTML (preview Google Drive), bukan file data.\n\nCARA YANG BENAR:\n1. Buka Google Drive di browser Chrome\n2. Klik KANAN pada file backup\n3. Pilih "Download" / "Unduh"\n4. JANGAN klik dua kali file (itu hanya preview)\n5. Pilih file .json yang sudah didownload dengan cara benar');
-                    event.target.value = '';
+                if(data.daftar_nasabah && Array.isArray(data.daftar_nasabah)) {
+                    daftarNasabah = data.daftar_nasabah;
+                } else if(Array.isArray(data)) {
+                    daftarNasabah = data;
+                } else {
+                    alert('❌ Format data tidak valid!\n\nPastikan Anda copy seluruh teks dari tombol "Salin Data Cicilan".');
                     return;
                 }
                 
-                try {
-                    let data = JSON.parse(isiFile);
-                    let daftarNasabah = null;
-                    
-                    if(data.daftar_nasabah && Array.isArray(data.daftar_nasabah)) {
-                        daftarNasabah = data.daftar_nasabah;
-                    } else if(Array.isArray(data)) {
-                        daftarNasabah = data;
-                    } else {
-                        alert('❌ Format file tidak valid!\n\nFile harus berisi data cicilan dengan format yang benar.');
-                        return;
-                    }
-                    
-                    // Validasi data
-                    let dataValid = 0;
-                    daftarNasabah.forEach(item => {
-                        if(item.nama && item.sisa !== undefined) dataValid++;
-                    });
-                    
-                    if(dataValid === 0) {
-                        alert('❌ File tidak berisi data cicilan yang valid!\n\nPastikan file ini dibuat dari tombol "Backup Data Cicilan" di aplikasi ini.');
-                        return;
-                    }
-                    
-                    if(!confirm('⚠️ PERHATIAN!\n\nData cicilan yang ada sekarang akan DIGANTI dengan data dari file backup.\n\nJumlah data di backup: ' + daftarNasabah.length + ' nasabah\nData valid: ' + dataValid + '\n\nLanjutkan memulihkan data?')) {
-                        return;
-                    }
-                    
-                    dataKredit = daftarNasabah;
-                    localStorage.setItem('toko_kredit', JSON.stringify(dataKredit));
-                    tampilkanKredit();
-                    tampilkanLaporanBulanan();
-                    alert('✅ BERHASIL!\n\nData cicilan berhasil dipulihkan sebanyak ' + daftarNasabah.length + ' nasabah.');
-                } catch(err) {
-                    alert('❌ GAGAL MEMBACA FILE!\n\nFile tidak valid atau rusak.\n\nKemungkinan penyebab:\n1. File yang didownload dari Google Drive adalah file HTML preview, bukan JSON\n2. File rusak saat transfer\n\nSOLUSI:\n1. Buka Google Drive di browser Chrome\n2. Klik KANAN file backup → pilih "Download"\n3. JANGAN klik dua kali file (itu hanya preview)\n4. Coba restore lagi dengan file yang baru didownload');
+                let dataValid = 0;
+                daftarNasabah.forEach(item => {
+                    if(item.nama && item.sisa !== undefined) dataValid++;
+                });
+                
+                if(dataValid === 0) {
+                    alert('❌ Data tidak berisi informasi cicilan yang valid!');
+                    return;
                 }
-            };
-            reader.onerror = function() {
-                alert('❌ GAGAL MEMBACA FILE!\n\nFile tidak bisa dibaca. Pastikan file tidak rusak.');
-            };
-            reader.readAsText(file);
-            event.target.value = '';
+                
+                if(!confirm('⚠️ PERHATIAN!\n\nData cicilan yang ada sekarang akan DIGANTI.\n\nJumlah data: ' + daftarNasabah.length + ' nasabah\nData valid: ' + dataValid + '\n\nLanjutkan memulihkan data?')) {
+                    return;
+                }
+                
+                dataKredit = daftarNasabah;
+                localStorage.setItem('toko_kredit', JSON.stringify(dataKredit));
+                tampilkanKredit();
+                tampilkanLaporanBulanan();
+                document.getElementById('jsonInputCicilan').value = '';
+                document.getElementById('pasteAreaCicilan').style.display = 'none';
+                alert('✅ BERHASIL!\n\nData cicilan berhasil dipulihkan sebanyak ' + daftarNasabah.length + ' nasabah.');
+            } catch(err) {
+                alert('❌ GAGAL MEMBACA DATA!\n\nPastikan Anda copy SELURUH teks dari tombol "Salin Data Cicilan".\n\nError: ' + err.message);
+            }
         }
 
-        function restoreSemuaData() {
-            document.getElementById('fileRestoreSemua').click();
-        }
-
-        function prosesRestoreSemua(event) {
-            let file = event.target.files[0];
-            if(!file) return;
+        function copySemuaData() {
+            let obj = { 
+                kas: dataTransaksi, 
+                kredit: dataKredit, 
+                stok: dataStok, 
+                katalog: dataKatalog, 
+                supplier: dataSupplier, 
+                kurir: dataKurir, 
+                tgl: new Date().toLocaleString() 
+            };
+            let jsonText = JSON.stringify(obj, null, 2);
             
-            if(!file.name.toLowerCase().endsWith('.json')) {
-                alert('❌ FILE SALAH!\n\nFile harus berakhiran .json\n\nFile Anda: ' + file.name);
-                event.target.value = '';
+            navigator.clipboard.writeText(jsonText).then(function() {
+                alert('✅ BERHASIL DISALIN!\n\nSemua data (Kas, Cicilan, Stok, Katalog, Supplier, Kurir) sudah ter-copy.\n\nSEKARANG:\n1. Buka WhatsApp/Notes/Email\n2. Paste di sana\n3. Simpan pesan itu!');
+            }).catch(function(err) {
+                let textarea = document.createElement('textarea');
+                textarea.value = jsonText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('✅ BERHASIL DISALIN!\n\nSemua data sudah ter-copy. Paste ke WhatsApp/Notes untuk simpan.');
+                } catch(e) {
+                    alert('❌ Gagal copy otomatis. Silakan copy manual.');
+                    let popup = window.open('', '_blank');
+                    popup.document.write('<pre>' + jsonText + '</pre>');
+                }
+                document.body.removeChild(textarea);
+            });
+        }
+
+        function showPasteSemua() {
+            let area = document.getElementById('pasteAreaSemua');
+            area.style.display = area.style.display === 'none' ? 'block' : 'none';
+            if(area.style.display === 'block') {
+                document.getElementById('jsonInputSemua').focus();
+            }
+        }
+
+        function prosesPasteSemua() {
+            let jsonText = document.getElementById('jsonInputSemua').value.trim();
+            
+            if(!jsonText) {
+                alert('❌ Kotak masih kosong!\n\nSilakan paste data dari WhatsApp/Notes dulu.');
                 return;
             }
             
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                let isiFile = e.target.result;
+            try {
+                let data = JSON.parse(jsonText);
                 
-                if(isiFile.trim().startsWith('<') || isiFile.includes('<!DOCTYPE') || isiFile.includes('<html')) {
-                    alert('❌ FILE BUKAN JSON!\n\nFile yang Anda pilih adalah file HTML (preview Google Drive).\n\nCARA YANG BENAR:\n1. Buka Google Drive di browser Chrome\n2. Klik KANAN file backup → pilih "Download"\n3. JANGAN klik dua kali file');
-                    event.target.value = '';
+                if(!confirm('⚠️ PERHATIAN!\n\nSEMUA data akan DIGANTI dengan data yang Anda paste.\n\nLanjutkan?')) {
                     return;
                 }
                 
-                try {
-                    let data = JSON.parse(isiFile);
-                    
-                    if(!confirm('⚠️ PERHATIAN!\n\nSEMUA data (Kas, Cicilan, Stok, Katalog, Supplier, Kurir) akan DIGANTI dengan data dari file backup.\n\nLanjutkan memulihkan data?')) {
-                        return;
-                    }
-                    
-                    if(data.kas) { dataTransaksi = data.kas; localStorage.setItem('toko_kas', JSON.stringify(dataTransaksi)); }
-                    if(data.kredit) { dataKredit = data.kredit; localStorage.setItem('toko_kredit', JSON.stringify(dataKredit)); }
-                    if(data.stok) { dataStok = data.stok; localStorage.setItem('toko_stok', JSON.stringify(dataStok)); }
-                    if(data.katalog) { dataKatalog = data.katalog; localStorage.setItem('toko_katalog', JSON.stringify(dataKatalog)); }
-                    if(data.supplier) { dataSupplier = data.supplier; localStorage.setItem('toko_supplier', JSON.stringify(dataSupplier)); }
-                    if(data.kurir) { dataKurir = data.kurir; localStorage.setItem('toko_kurir', JSON.stringify(dataKurir)); }
-                    
-                    tampilkanKas();
-                    tampilkanKredit();
-                    tampilkanStok();
-                    tampilkanKatalog();
-                    tampilkanSupplier();
-                    tampilkanKurir();
-                    tampilkanLaporanBulanan();
-                    alert('✅ BERHASIL!\n\nSemua data berhasil dipulihkan dari backup.');
-                } catch(err) {
-                    alert('❌ GAGAL MEMBACA FILE!\n\nFile tidak valid atau rusak.\n\nSOLUSI:\n1. Buka Google Drive di browser Chrome\n2. Klik KANAN file backup → pilih "Download"\n3. JANGAN klik dua kali file (itu hanya preview HTML)');
-                }
-            };
-            reader.onerror = function() {
-                alert('❌ GAGAL MEMBACA FILE!');
-            };
-            reader.readAsText(file);
-            event.target.value = '';
+                if(data.kas) { dataTransaksi = data.kas; localStorage.setItem('toko_kas', JSON.stringify(dataTransaksi)); }
+                if(data.kredit) { dataKredit = data.kredit; localStorage.setItem('toko_kredit', JSON.stringify(dataKredit)); }
+                if(data.stok) { dataStok = data.stok; localStorage.setItem('toko_stok', JSON.stringify(dataStok)); }
+                if(data.katalog) { dataKatalog = data.katalog; localStorage.setItem('toko_katalog', JSON.stringify(dataKatalog)); }
+                if(data.supplier) { dataSupplier = data.supplier; localStorage.setItem('toko_supplier', JSON.stringify(dataSupplier)); }
+                if(data.kurir) { dataKurir = data.kurir; localStorage.setItem('toko_kurir', JSON.stringify(dataKurir)); }
+                
+                tampilkanKas();
+                tampilkanKredit();
+                tampilkanStok();
+                tampilkanKatalog();
+                tampilkanSupplier();
+                tampilkanKurir();
+                tampilkanLaporanBulanan();
+                document.getElementById('jsonInputSemua').value = '';
+                document.getElementById('pasteAreaSemua').style.display = 'none';
+                alert('✅ BERHASIL!\n\nSemua data berhasil dipulihkan.');
+            } catch(err) {
+                alert('❌ GAGAL MEMBACA DATA!\n\nPastikan Anda copy SELURUH teks dari tombol "Salin Semua Data".\n\nError: ' + err.message);
+            }
         }
 
         function simpanKreditBaru() {
