@@ -27,8 +27,7 @@
         .box-cari label { font-size: 13px; font-weight: bold; color: #334155; display: block; margin-bottom: 5px; }
         .box-cari input { margin-bottom: 0; background: #fff; }
         .laporan-box { background: #f0f9ff; padding: 12px; border-radius: 6px; border: 2px solid #0369a1; margin-bottom: 10px; }
-        .laporan-total { font-size: 16px; font-weight: bold; color: #dc2626; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0; }
-        .laporan-detail { padding: 8px; background: #fff; border-radius: 4px; margin-bottom: 5px; font-size: 12px; }
+        .laporan-total { font-size: 18px; font-weight: bold; color: #dc2626; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0; }
         .btn-tambah-utang { background: #d97706; color: white; border: none; padding: 5px 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; margin-top: 3px; margin-right: 3px; }
     </style>
 </head>
@@ -256,6 +255,7 @@
             localStorage.setItem('toko_kredit', JSON.stringify(dataKredit));
             let cariEl = document.getElementById('cari-kredit'); if(cariEl) cariEl.value = '';
             tampilkanKredit();
+            tampilkanLaporanBulanan();
             document.getElementById('nama-kredit').value = ''; document.getElementById('wa-kredit').value = ''; document.getElementById('barang-kredit').value = ''; document.getElementById('total-kredit').value = '';
         }
         function bayarAngsuran(idx) {
@@ -267,9 +267,9 @@
             dataKredit[idx].riwayat.push('Bayar Rp ' + b.toLocaleString('id-ID') + ' (' + new Date().toLocaleDateString('id-ID') + ')');
             localStorage.setItem('toko_kredit', JSON.stringify(dataKredit));
             tampilkanKredit();
+            tampilkanLaporanBulanan();
         }
 
-        // ====== FITUR BARU: TAMBAH UTANG ======
         function tambahUtangBaru(idx) {
             let barangBaru = prompt("Masukkan nama barang baru yang diambil:\n(Cth: Ember, Gayung, dll)");
             if(!barangBaru || barangBaru.trim() === '') return;
@@ -296,6 +296,7 @@
                 dataKredit[idx].riwayat.push('Tambah utang [' + barangBaru + '] Rp ' + nominal.toLocaleString('id-ID') + ' (' + new Date().toLocaleDateString('id-ID') + ')');
                 localStorage.setItem('toko_kredit', JSON.stringify(dataKredit));
                 tampilkanKredit();
+                tampilkanLaporanBulanan();
                 alert('Berhasil! Total utang ' + dataKredit[idx].nama + ' sekarang Rp ' + totalBaru.toLocaleString('id-ID'));
             }
         }
@@ -329,7 +330,7 @@
                 r.innerHTML = hasil;
             }
         }
-        function hapusKredit(idx) { if(confirm('Hapus atau lunasi data ini?')) { dataKredit.splice(idx, 1); localStorage.setItem('toko_kredit', JSON.stringify(dataKredit)); tampilkanKredit(); } }
+        function hapusKredit(idx) { if(confirm('Hapus atau lunasi data ini?')) { dataKredit.splice(idx, 1); localStorage.setItem('toko_kredit', JSON.stringify(dataKredit)); tampilkanKredit(); tampilkanLaporanBulanan(); } }
 
         function tampilkanLaporanBulanan() {
             let laporanDiv = document.getElementById('laporan-bulanan');
@@ -341,25 +342,21 @@
             
             let totalPiutang = 0;
             let pelangganMasihHutang = 0;
-            let detailHTML = '';
             
-            dataKredit.forEach((k, idx) => {
+            dataKredit.forEach((k) => {
                 if (k.sisa > 0) {
                     totalPiutang += k.sisa;
                     pelangganMasihHutang++;
-                    detailHTML += '<div class="laporan-detail"><b>' + k.nama + '</b> ' + (k.wa ? '(' + k.wa + ')' : '') + '<br>Barang: ' + k.barang + ' | Sisa: <b style="color:#dc2626;">Rp ' + k.sisa.toLocaleString('id-ID') + '</b></div>';
                 }
             });
             
             let html = '<div class="laporan-box">' +
                 '<div style="font-size: 14px; font-weight: bold; color: #0369a1; margin-bottom: 8px;">Laporan Bulan Ini</div>' +
-                '<div style="font-size: 13px; margin-bottom: 5px;">Pelanggan Masih Hutang: <b>' + pelangganMasihHutang + ' orang</b></div>' +
+                '<div style="font-size: 14px; margin-bottom: 5px;">Pelanggan Masih Hutang: <b>' + pelangganMasihHutang + ' orang</b></div>' +
                 '<div class="laporan-total">Total Piutang: Rp ' + totalPiutang.toLocaleString('id-ID') + '</div>' +
                 '</div>';
             
-            if (pelangganMasihHutang > 0) {
-                html += '<div style="margin-top: 10px;"><b style="font-size: 12px;">Rincian:</b>' + detailHTML + '</div>';
-            } else {
+            if (pelangganMasihHutang === 0) {
                 html += '<div style="text-align:center; color:#16a34a; margin-top:10px; font-weight:bold;">Semua cicilan sudah lunas!</div>';
             }
             
