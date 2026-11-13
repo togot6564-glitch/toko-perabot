@@ -1,79 +1,39 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pencarian Cicilan - Toko Perabot Pro</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 15px; background: #f4f6f9; }
-        h2 { color: #2e3650; margin-bottom: 10px; }
-        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+            db.ref('cicilan').on('value', (snapshot) => {
+                html += `<div class="history-item">
+        const db = firebase.database();
+                const data = snapshot.val();
+                
         .search-box { background: #eef2f7; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
-        input { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-        .history-item { padding: 12px 0; border-bottom: 1px solid #eee; }
-    </style>
-</head>
-<body>
 
     <div class="card">
-        <h2>Buku Cicilan Pelanggan</h2>
-        
-        <!-- Kotak Pencarian Utama -->
-        <div class="search-box">
-            <label style="font-size: 14px; font-weight: bold; color: #333;">Cari Pelanggan / No HP:</label><br>
-            <input type="text" id="inputCariPelanggan" oninput="filterDataCicilan()" placeholder="Ketik nama atau no HP...">
-        </div>
-
-        <!-- Daftar Hasil -->
-        <div id="listCicilanPelanggan">Memuat data cicilan...</div>
-    </div>
-
-    <script>
-        const firebaseConfig = {
-            databaseURL: "https://toko-perabot-default-rtdb.firebaseio.com/"
-        };
-
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
         }
-        const db = firebase.database();
-
-        let cacheDataCicilan = {};
+</head>
 
         function ambilDataCicilan() {
-            db.ref('cicilan').on('value', (snapshot) => {
-                const data = snapshot.val();
-                cacheDataCicilan = data || {};
-                tampilkanDataCicilan(cacheDataCicilan);
+        
+        .no-data { color: #666; font-style: italic; text-align: center; padding: 20px 0; }
+        if (!firebase.apps.length) {
+    <style>
+        <div class="search-box">
             });
-        }
-
-        function tampilkanDataCicilan(data) {
-            const daftarDiv = document.getElementById('listCicilanPelanggan');
-            if (!data || Object.keys(data).length === 0) {
-                daftarDiv.innerHTML = "Belum ada data cicilan.";
-                return;
-            }
-
-            let html = "";
-            for (let id in data) {
-                let item = data[id];
-                html += `<div class="history-item">
-                    <strong>${item.nama || 'Tanpa Nama'}</strong> (${item.hp || '-'ik})<br>
-                    Barang: ${item.barang || '-'} | Rp ${item.nominal || 0}<br>
-                    <small style="color: #666;">Tanggal: ${item.tanggal || '-'}</small>
-                </div>`;
-            }
-            daftarDiv.innerHTML = html;
-        }
-
+    </div>
         function filterDataCicilan() {
+        function tampilkanDataCicilan(data) {
+                console.log("Data cicilan berhasil diambil:", cacheDataCicilan);
+        .history-item { padding: 12px 0; border-bottom: 1px solid #eee; }
+            }, (error) => {
+    <meta charset="UTF-8">
+    <title>Pencarian Cicilan - Toko Perabot Pro</title>
+<body>
+        <!-- Daftar Hasil -->
             const inputElement = document.getElementById('inputCariPelanggan');
             if (!inputElement) return;
 
-            const keyword = inputElement.value.toLowerCase();
+            // .trim() menghapus spasi di awal/akhir yang tidak sengaja terketik
+            const keyword = inputElement.value.toLowerCase().trim();
             
             if (!keyword) {
                 tampilkanDataCicilan(cacheDataCicilan);
@@ -83,10 +43,13 @@
             let filtered = {};
             for (let id in cacheDataCicilan) {
                 let item = cacheDataCicilan[id];
-                let namaPelanggan = (item.nama || "").toLowerCase();
-                let namaBarang = (item.barang || "").toLowerCase();
-                let nomorHp = (item.hp || "").toLowerCase();
+                
+                // PERBAIKAN PENTING: Gunakan String() agar tidak error jika data berupa angka
+                let namaPelanggan = String(item.nama || "").toLowerCase();
+                let namaBarang = String(item.barang || "").toLowerCase();
+                let nomorHp = String(item.hp || "").toLowerCase();
 
+                // Cek apakah keyword cocok dengan nama, barang, atau nomor HP
                 if (namaPelanggan.includes(keyword) || namaBarang.includes(keyword) || nomorHp.includes(keyword)) {
                     filtered[id] = item;
                 }
