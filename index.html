@@ -29,6 +29,7 @@
         .laporan-box { background: #f0f9ff; padding: 12px; border-radius: 6px; border: 2px solid #0369a1; margin-bottom: 10px; }
         .laporan-total { font-size: 16px; font-weight: bold; color: #dc2626; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0; }
         .laporan-detail { padding: 8px; background: #fff; border-radius: 4px; margin-bottom: 5px; font-size: 12px; }
+        .btn-tambah-utang { background: #d97706; color: white; border: none; padding: 5px 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; margin-top: 3px; margin-right: 3px; }
     </style>
 </head>
 <body>
@@ -79,7 +80,6 @@
             <button class="btn" onclick="simpanKreditBaru()">Buat Buku Cicilan</button>
         </div>
 
-        <!-- LAPORAN PIUTANG BULANAN -->
         <div class="card" style="background: #f0f9ff;">
             <h2 style="color: #0369a1;">Laporan Piutang Bulanan</h2>
             <button class="btn" style="background: #0369a1;" onclick="tampilkanLaporanBulanan()">Lihat Total Piutang</button>
@@ -268,6 +268,38 @@
             localStorage.setItem('toko_kredit', JSON.stringify(dataKredit));
             tampilkanKredit();
         }
+
+        // ====== FITUR BARU: TAMBAH UTANG ======
+        function tambahUtangBaru(idx) {
+            let barangBaru = prompt("Masukkan nama barang baru yang diambil:\n(Cth: Ember, Gayung, dll)");
+            if(!barangBaru || barangBaru.trim() === '') return;
+            
+            let nominalBaru = prompt("Masukkan harga/nominal barang '" + barangBaru + "' (Rp):");
+            if(!nominalBaru || isNaN(nominalBaru) || Number(nominalBaru) <= 0) {
+                alert('Nominal harus angka yang valid!');
+                return;
+            }
+            
+            let nominal = Number(nominalBaru);
+            let sisaLama = dataKredit[idx].sisa;
+            let totalBaru = sisaLama + nominal;
+            
+            if(confirm('Konfirmasi Tambah Utang:\n\n' +
+                       'Pelanggan: ' + dataKredit[idx].nama + '\n' +
+                       'Barang baru: ' + barangBaru + '\n' +
+                       'Sisa utang lama: Rp ' + sisaLama.toLocaleString('id-ID') + '\n' +
+                       'Tambahan: Rp ' + nominal.toLocaleString('id-ID') + '\n' +
+                       'TOTAL UTANG BARU: Rp ' + totalBaru.toLocaleString('id-ID') + '\n\n' +
+                       'Lanjutkan?')) {
+                
+                dataKredit[idx].sisa = totalBaru;
+                dataKredit[idx].riwayat.push('Tambah utang [' + barangBaru + '] Rp ' + nominal.toLocaleString('id-ID') + ' (' + new Date().toLocaleDateString('id-ID') + ')');
+                localStorage.setItem('toko_kredit', JSON.stringify(dataKredit));
+                tampilkanKredit();
+                alert('Berhasil! Total utang ' + dataKredit[idx].nama + ' sekarang Rp ' + totalBaru.toLocaleString('id-ID'));
+            }
+        }
+
         function tampilkanKredit() {
             let r = document.getElementById('riwayat-kredit');
             let cariEl = document.getElementById('cari-kredit');
@@ -288,7 +320,7 @@
                 ketemu++;
                 let waLink = k.wa ? '<a href="https://wa.me/' + k.wa.replace(/^0/, '62') + '?text=' + encodeURIComponent('Halo Kak ' + k.nama + ', sisa cicilan ' + k.barang + ' di toko perabot adalah Rp ' + k.sisa.toLocaleString('id-ID') + '. Terima kasih!') + '" target="_blank" style="text-decoration:none;"><button class="btn-wa">WA Pelanggan</button></a>' : '';
                 let hist = k.riwayat && k.riwayat.length > 0 ? k.riwayat.join('<br>') : 'Belum ada cicilan masuk';
-                hasil += '<div class="item-list"><b>' + k.nama + '</b> ' + (k.wa ? '(' + k.wa + ')' : '') + '<br>Barang: ' + k.barang + '<br>Sisa: <b style="color:var(--danger);">Rp ' + k.sisa.toLocaleString('id-ID') + '</b><br><div style="font-size:11px;color:#64748b;margin:3px 0;background:#fff;padding:4px;border-radius:4px;"><b>Riwayat:</b><br>' + hist + '</div><button class="btn" style="padding:5px;font-size:11px;background:var(--success);margin-top:2px;" onclick="bayarAngsuran(' + idx + ')">Catat Bayar</button>' + waLink + '<button style="margin-top:2px;background:var(--danger);color:white;border:none;padding:5px;border-radius:4px;cursor:pointer;width:100%;font-weight:bold;font-size:11px;" onclick="hapusKredit(' + idx + ')">Lunas / Hapus</button></div>';
+                hasil += '<div class="item-list"><b>' + k.nama + '</b> ' + (k.wa ? '(' + k.wa + ')' : '') + '<br>Barang: ' + k.barang + '<br>Sisa: <b style="color:var(--danger);">Rp ' + k.sisa.toLocaleString('id-ID') + '</b><br><div style="font-size:11px;color:#64748b;margin:3px 0;background:#fff;padding:4px;border-radius:4px;"><b>Riwayat:</b><br>' + hist + '</div><button class="btn" style="padding:5px;font-size:11px;background:var(--success);margin-top:2px;" onclick="bayarAngsuran(' + idx + ')">Catat Bayar</button> <button class="btn-tambah-utang" onclick="tambahUtangBaru(' + idx + ')">Tambah Utang</button>' + waLink + '<button style="margin-top:2px;background:var(--danger);color:white;border:none;padding:5px;border-radius:4px;cursor:pointer;width:100%;font-weight:bold;font-size:11px;" onclick="hapusKredit(' + idx + ')">Lunas / Hapus</button></div>';
             });
 
             if (ketemu === 0) {
@@ -299,7 +331,6 @@
         }
         function hapusKredit(idx) { if(confirm('Hapus atau lunasi data ini?')) { dataKredit.splice(idx, 1); localStorage.setItem('toko_kredit', JSON.stringify(dataKredit)); tampilkanKredit(); } }
 
-        // ====== FUNGSI LAPORAN PIUTANG BULANAN ======
         function tampilkanLaporanBulanan() {
             let laporanDiv = document.getElementById('laporan-bulanan');
             
