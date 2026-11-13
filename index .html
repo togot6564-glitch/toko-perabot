@@ -3,33 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pusat Toko Perabot Pro</title>
+    <title>Pencarian Cicilan - Toko Perabot Pro</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background: #f4f6f9; }
-        h1 { font-size: 20px; color: #2e3650; margin-bottom: 5px; }
-        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        input, select { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        .history-item { padding: 10px; border-bottom: 1px solid #eee; }
-        .search-box { background: #eef2f7; padding: 10px; border-radius: 6px; margin-bottom: 10px; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 15px; background: #f4f6f9; }
+        h2 { color: #2e3650; margin-bottom: 10px; }
+        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .search-box { background: #eef2f7; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
+        input { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .history-item { padding: 12px 0; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
 
-    <h1>Pusat Toko Perabot Pro</h1>
-    <p style="font-size: 13px; color: #666;">Buku Pencarian Cicilan Pelanggan</p>
-
-    <!-- Tab Cicilan Langsung Terbuka Permanen -->
     <div class="card">
-        <h3>Buku Cicilan Pelanggan</h3>
+        <h2>Buku Cicilan Pelanggan</h2>
         
-        <!-- Kolom Pencarian Pelanggan & No HP -->
+        <!-- Kotak Pencarian Utama -->
         <div class="search-box">
-            <label style="font-size: 13px; font-weight: bold;">Cari Pelanggan / No HP:</label>
+            <label style="font-size: 14px; font-weight: bold; color: #333;">Cari Pelanggan / No HP / Barang:</label>
             <input type="text" id="inputCariPelanggan" oninput="filterDataCicilan()" placeholder="Ketik nama, barang, atau no HP...">
         </div>
 
+        <!-- Daftar Hasil -->
         <div id="listCicilanPelanggan">Memuat data cicilan...</div>
     </div>
 
@@ -46,7 +43,7 @@
 
         let cacheDataCicilan = {};
 
-        // Ambil data dari Firebase secara real-time
+        // Ambil data dari Firebase
         function ambilDataCicilan() {
             db.ref('cicilan').on('value', (snapshot) => {
                 const data = snapshot.val();
@@ -55,7 +52,7 @@
             });
         }
 
-        // Tampilkan data ke elemen HTML
+        // Render atau Tampilkan Data ke Layar
         function tampilkanDataCicilan(data) {
             const daftarDiv = document.getElementById('listCicilanPelanggan');
             if (!data || Object.keys(data).length === 0) {
@@ -69,13 +66,13 @@
                 html += `<div class="history-item">
                     <strong>${item.nama || 'Tanpa Nama'}</strong> (${item.hp || '-'ik})<br>
                     Barang: ${item.barang || '-'} | Rp ${item.nominal || 0}<br>
-                    <small>Tanggal: ${item.tanggal || '-'}</small>
+                    <small style="color: #666;">Tanggal: ${item.tanggal || '-'}</small>
                 </div>`;
             }
             daftarDiv.innerHTML = html;
         }
 
-        // Fungsi Filter Pencarian (Real-time saat diketik)
+        // Fungsi Filter Pencarian Real-time
         function filterDataCicilan() {
             const inputElement = document.getElementById('inputCariPelanggan');
             if (!inputElement) return;
@@ -102,7 +99,7 @@
             tampilkanDataCicilan(filtered);
         }
 
-        // Jalankan saat halaman dimuat
+        // Jalankan saat halaman siap
         window.onload = function() {
             ambilDataCicilan();
         };
