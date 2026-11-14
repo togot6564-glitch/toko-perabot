@@ -504,6 +504,43 @@
             idxSoal++; muatKuis();
         }
         window.onload = function() { muatKuis(); };
-    </script>
+    </script><script>
+// Tunggu halaman selesai dimuat
+window.addEventListener('load', function() {
+  // Cek apakah Firebase sudah dimuat
+  if (typeof firebase !== 'undefined') {
+    const db = firebase.database();
+    
+    // Buat struktur SaaS
+    db.ref('tenants/toko_berkah/profile').set({
+      nama: "Toko Perabot Berkah",
+      pemilik: "Budi",
+      status: "active"
+    }).then(() => {
+      console.log('✅ Tenants dibuat');
+      return db.ref('tenants/toko_berkah/products/meja_jati').set({
+        nama: "Meja Jati",
+        harga: 2500000,
+        stok: 5
+      });
+    }).then(() => {
+      console.log('✅ Products dibuat');
+      return db.ref('users/admin_pusat').set({
+        email: "admin@tokoperabot.com",
+        role: "super_admin",
+        nama: "Bos Pusat"
+      });
+    }).then(() => {
+      console.log('✅ Users dibuat');
+      alert('✅ SUKSES! Cek Firebase Console sekarang!');
+    }).catch((error) => {
+      console.error('❌ Error:', error);
+      alert('❌ Gagal: ' + error.message);
+    });
+  } else {
+    alert('❌ Firebase belum dimuat!');
+  }
+});
+</script>
 </body>
                 </html>
