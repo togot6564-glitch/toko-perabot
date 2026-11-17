@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pusat Toko Perabot Pro - SaaS</title>
+    <title>RentDesk - Simple Property Management</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <style>
         :root { --primary:#0284c7; --success:#16a34a; --danger:#dc2626; --bg:#f8fafc; --card:#fff; --text:#334155; }
-        body { font-family:sans-serif; background:var(--bg); color:var(--text); padding:10px; margin:0; font-size:14px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:var(--text); padding:10px; margin:0; font-size:14px; }
         header { text-align:center; margin-bottom:12px; padding:10px; background:var(--primary); color:#fff; border-radius:8px; }
         .card { background:var(--card); padding:12px; border-radius:8px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,.1); }
         h2 { color:var(--primary); font-size:1.05rem; margin:0 0 8px; }
@@ -33,72 +33,72 @@
 <body>
 
     <div id="view-auth">
-        <header><h2 style="color:#fff;border:none;margin:0;">Pusat Toko Perabot Pro ☁️</h2>
-        <p style="margin:2px 0 0;font-size:.75rem;">Sistem Multi-Toko Aman</p></header>
+        <header><h2 style="color:#fff;border:none;margin:0;">RentDesk ☁️</h2>
+        <p style="margin:2px 0 0;font-size:.75rem;">Simple Property & Tenant Management</p></header>
 
         <div class="tab-login">
-            <button class="tab-btn aktif" onclick="gantiTab('masuk',this)">Masuk</button>
-            <button class="tab-btn" onclick="gantiTab('daftar',this)">Daftar Baru</button>
+            <button class="tab-btn aktif" onclick="gantiTab('masuk',this)">Sign In</button>
+            <button class="tab-btn" onclick="gantiTab('daftar',this)">Register Property</button>
         </div>
 
         <div id="form-masuk" class="card">
-            <h2>Masuk ke Akun</h2>
-            <input type="email" id="masuk-email" placeholder="Email">
+            <h2>Welcome Back</h2>
+            <input type="email" id="masuk-email" placeholder="Email Address">
             <input type="password" id="masuk-pass" placeholder="Password">
-            <button class="btn" onclick="prosesMasuk()">Masuk</button>
-            <button class="btn-link" onclick="lupaPassword()">Lupa password? Klik di sini</button>
+            <button class="btn" onclick="prosesMasuk()">Sign In</button>
+            <button class="btn-link" onclick="lupaPassword()">Forgot password? Reset here</button>
             <p class="info" id="masuk-info"></p>
         </div>
 
         <div id="form-daftar" class="card hidden">
-            <h2>Daftar Akun Baru</h2>
-            <input type="text" id="daftar-nama" placeholder="Nama Lengkap">
-            <input type="text" id="daftar-toko" placeholder="Nama Toko Anda">
-            <input type="email" id="daftar-email" placeholder="Email">
-            <input type="password" id="daftar-pass" placeholder="Password (min 6 karakter)">
-            <button class="btn" onclick="prosesDaftar()">Daftar Sekarang</button>
+            <h2>Register New Property</h2>
+            <input type="text" id="daftar-nama" placeholder="Landlord Full Name">
+            <input type="text" id="daftar-toko" placeholder="Property Name (e.g., Sunset Apartments)">
+            <input type="email" id="daftar-email" placeholder="Email Address">
+            <input type="password" id="daftar-pass" placeholder="Password (min 6 characters)">
+            <button class="btn" onclick="prosesDaftar()">Create Account</button>
             <p class="info" id="daftar-info"></p>
         </div>
     </div>
 
     <div id="view-toko" class="hidden">
-        <header><h2 id="toko-judul" style="color:#fff;border:none;margin:0;">Toko</h2>
+        <header><h2 id="toko-judul" style="color:#fff;border:none;margin:0;">My Properties</h2>
         <p id="toko-user" style="margin:2px 0 0;font-size:.75rem;"></p></header>
 
         <div class="menu-grid">
-            <div class="menu-btn aktif" onclick="gantiPanel('kas',this)">Kas</div>
-            <div class="menu-btn" onclick="gantiPanel('produk',this)">Produk</div>
+            <div class="menu-btn aktif" onclick="gantiPanel('kas',this)">Payments</div>
+            <div class="menu-btn" onclick="gantiPanel('produk',this)">Units</div>
         </div>
 
         <div id="panel-kas" class="panel aktif">
-            <div class="card"><h2>Catat Kas</h2>
-                <input type="text" id="ket-kas" placeholder="Keterangan">
-                <input type="number" id="nom-kas" placeholder="Nominal (Rp)">
-                <button class="btn" onclick="simpanKas()">Simpan Kas</button>
+            <div class="card"><h2>Record Rent Payment</h2>
+                <input type="text" id="ket-kas" placeholder="Description (e.g., Unit 01 - October Rent)">
+                <input type="number" id="nom-kas" placeholder="Amount ($)">
+                <button class="btn" onclick="simpanKas()">Save Payment</button>
             </div>
-            <div class="card"><h2>Riwayat Kas Toko Ini</h2>
-                <div id="riwayat-kas" class="loading">Memuat...</div>
+            <div class="card"><h2>Payment History</h2>
+                <div id="riwayat-kas" class="loading">Loading...</div>
             </div>
         </div>
 
         <div id="panel-produk" class="panel">
-            <div class="card"><h2>Produk Toko Ini</h2>
-                <div id="riwayat-produk" class="loading">Memuat...</div>
+            <div class="card"><h2>Unit / Room Data</h2>
+                <div id="riwayat-produk" class="loading">Loading...</div>
             </div>
         </div>
 
-        <button class="btn btn-out" onclick="prosesLogout()">Keluar (Logout)</button>
+        <button class="btn btn-out" onclick="prosesLogout()">Sign Out</button>
     </div>
 
     <div id="view-pusat" class="hidden">
-        <header><h2 style="color:#fff;border:none;margin:0;">🏢 Dashboard Pusat</h2>
-        <p style="margin:2px 0 0;font-size:.75rem;">Anda login sebagai Super Admin</p></header>
+        <header><h2 style="color:#fff;border:none;margin:0;">🏢 Super Admin Dashboard</h2>
+        <p style="margin:2px 0 0;font-size:.75rem;">Logged in as Super Admin</p></header>
 
-        <div class="card"><h2>Daftar Semua Tenant (Toko)</h2>
-            <div id="daftar-tenant" class="loading">Memuat...</div>
+        <div class="card"><h2>All Registered Properties</h2>
+            <div id="daftar-tenant" class="loading">Loading...</div>
         </div>
 
-        <button class="btn btn-out" onclick="prosesLogout()">Keluar (Logout)</button>
+        <button class="btn btn-out" onclick="prosesLogout()">Sign Out</button>
     </div>
 
     <script>
@@ -140,15 +140,15 @@
             const pass = document.getElementById('daftar-pass').value.trim();
             const info = document.getElementById('daftar-info');
 
-            if (!nama || !toko || !email || !pass) { info.innerHTML = '⚠️ Semua field wajib diisi!'; return; }
-            if (pass.length < 6) { info.innerHTML = '⚠️ Password minimal 6 karakter!'; return; }
+            if (!nama || !toko || !email || !pass) { info.innerHTML = '⚠️ All fields are required!'; return; }
+            if (pass.length < 6) { info.innerHTML = '⚠️ Password must be at least 6 characters!'; return; }
 
-            info.innerHTML = '⏳ Mendaftarkan...';
+            info.innerHTML = '⏳ Creating account...';
 
             auth.createUserWithEmailAndPassword(email, pass)
                 .then(cred => {
                     const uid = cred.user.uid;
-                    const tenantId = 'toko_' + uid.substring(0, 8);
+                    const tenantId = 'prop_' + uid.substring(0, 8); // Diubah jadi prop_ agar lebih relevan
                     return db.ref('users/' + uid).set({
                         email: email, nama: nama, role: 'owner', tenantId: tenantId
                     }).then(() => {
@@ -158,7 +158,7 @@
                     });
                 })
                 .then(() => {
-                    info.innerHTML = '✅ Berhasil! Silakan masuk dengan akun baru Anda.';
+                    info.innerHTML = '✅ Success! Please sign in with your new account.';
                     document.getElementById('daftar-nama').value = '';
                     document.getElementById('daftar-toko').value = '';
                     document.getElementById('daftar-email').value = '';
@@ -175,18 +175,18 @@
             const pass = document.getElementById('masuk-pass').value.trim();
             const info = document.getElementById('masuk-info');
 
-            if (!email || !pass) { info.innerHTML = '⚠️ Isi email & password!'; return; }
-            info.innerHTML = '⏳ Memproses...';
+            if (!email || !pass) { info.innerHTML = '⚠️ Please enter email & password!'; return; }
+            info.innerHTML = '⏳ Processing...';
 
             auth.signInWithEmailAndPassword(email, pass)
                 .catch(err => { info.innerHTML = '❌ ' + err.message; });
         }
 
         function lupaPassword() {
-            const email = prompt('Masukkan email Anda untuk reset password:');
+            const email = prompt('Enter your email address to reset password:');
             if (!email) return;
             auth.sendPasswordResetEmail(email)
-                .then(() => alert('✅ Link reset password sudah dikirim ke email Anda!'))
+                .then(() => alert('✅ Password reset link has been sent to your email!'))
                 .catch(err => alert('❌ ' + err.message));
         }
 
@@ -198,7 +198,7 @@
             if (user) {
                 db.ref('users/' + user.uid).once('value').then(snap => {
                     const data = snap.val();
-                    if (!data) { alert('Data user tidak ditemukan'); auth.signOut(); return; }
+                    if (!data) { alert('User data not found'); auth.signOut(); return; }
                     currentUser = { uid: user.uid, ...data };
                     if (data.role === 'super_admin') masukPusat();
                     else masukToko();
@@ -215,8 +215,8 @@
             document.getElementById('view-toko').classList.remove('hidden');
             db.ref('tenants/' + currentUser.tenantId + '/profile').once('value').then(s => {
                 const p = s.val() || {};
-                document.getElementById('toko-judul').innerText = (p.nama || 'Toko Saya') + " ☁️";
-                document.getElementById('toko-user').innerText = "Login: " + currentUser.nama + " (ID: " + currentUser.tenantId + ")";
+                document.getElementById('toko-judul').innerText = (p.nama || 'My Property') + " ☁️";
+                document.getElementById('toko-user').innerText = "Logged in as: " + currentUser.nama + " (ID: " + currentUser.tenantId + ")";
             });
             initKas();
             initProduk();
@@ -238,29 +238,29 @@
             });
         }
         function simpanKas() {
-            const ket = document.getElementById('ket-kas').value || 'Tanpa Ket';
+            const ket = document.getElementById('ket-kas').value || 'No Description';
             const nom = document.getElementById('nom-kas').value;
-            if (!nom) { alert("Isi nominal!"); return; }
-            dbT('kas').push({ ket: ket, nominal: Number(nom), tanggal: new Date().toLocaleString('id-ID') });
+            if (!nom) { alert("Please enter an amount!"); return; }
+            dbT('kas').push({ ket: ket, nominal: Number(nom), tanggal: new Date().toLocaleString('en-US') });
             document.getElementById('ket-kas').value = ''; document.getElementById('nom-kas').value = '';
         }
         function tampilkanKas() {
             const r = document.getElementById('riwayat-kas');
-            if (!dataKas.length) { r.innerHTML = 'Belum ada catatan di toko ini.'; return; }
+            if (!dataKas.length) { r.innerHTML = 'No payment records found for this property.'; return; }
             r.innerHTML = dataKas.map(i =>
-                '<div class="item-list">' + i.ket + ' - Rp ' + Number(i.nominal).toLocaleString('id-ID') +
-                ' <button style="float:right;background:var(--danger);color:#fff;border:none;padding:2px 6px;border-radius:3px;cursor:pointer;" onclick="hapusKas(\'' + i.id + '\')">Hapus</button></div>'
+                '<div class="item-list">' + i.ket + ' - $' + Number(i.nominal).toLocaleString('en-US', {minimumFractionDigits: 2}) +
+                ' <button style="float:right;background:var(--danger);color:#fff;border:none;padding:2px 6px;border-radius:3px;cursor:pointer;" onclick="hapusKas(\'' + i.id + '\')">Delete</button></div>'
             ).join('');
         }
-        function hapusKas(id) { if (confirm("Hapus?")) dbT('kas/' + id).remove(); }
+        function hapusKas(id) { if (confirm("Are you sure you want to delete this?")) dbT('kas/' + id).remove(); }
 
         function initProduk() {
             dbT('products').on('value', snap => {
                 const r = document.getElementById('riwayat-produk');
-                if (!snap.exists()) { r.innerHTML = 'Belum ada produk di toko ini.'; return; }
+                if (!snap.exists()) { r.innerHTML = 'No units/rooms added yet.'; return; }
                 let html = '';
                 snap.forEach(c => { const p = c.val();
-                    html += '<div class="item-list"><b>' + p.nama + '</b><br>Harga: Rp ' + Number(p.harga).toLocaleString('id-ID') + ' | Stok: ' + (p.stok || 0) + '</div>';
+                    html += '<div class="item-list"><b>' + p.nama + '</b><br>Rent: $' + Number(p.harga).toLocaleString('en-US', {minimumFractionDigits: 2}) + ' | Status: ' + (p.stok || 'Available') + '</div>';
                 });
                 r.innerHTML = html;
             });
@@ -271,7 +271,7 @@
             document.getElementById('view-pusat').classList.remove('hidden');
             db.ref('tenants').once('value').then(snap => {
                 const r = document.getElementById('daftar-tenant');
-                if (!snap.exists()) { r.innerHTML = 'Belum ada tenant.'; return; }
+                if (!snap.exists()) { r.innerHTML = 'No properties registered yet.'; return; }
                 let html = '', jumlah = 0;
                 snap.forEach(c => {
                     const t = c.val(); jumlah++;
@@ -279,9 +279,9 @@
                     const nProd = t.products ? Object.keys(t.products).length : 0;
                     html += '<div class="item-list"><b>' + (prof.nama || c.key) + '</b><br>' +
                             'ID: <code>' + c.key + '</code><br>' +
-                            'Pemilik: ' + (prof.pemilik || '-') + '<br>Produk: ' + nProd + '</div>';
+                            'Landlord: ' + (prof.pemilik || '-') + '<br>Total Units: ' + nProd + '</div>';
                 });
-                r.innerHTML = '<div class="info">Total tenant: <b>' + jumlah + '</b></div>' + html;
+                r.innerHTML = '<div class="info">Total Properties: <b>' + jumlah + '</b></div>' + html;
             });
         }
     </script>
