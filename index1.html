@@ -1,21 +1,289 @@
-{
-  "rules": {
-    "users": {
-      "$uid": {
-        ".read": "auth != null && auth.uid === $uid",
-        ".write": "auth != null && auth.uid === $uid"
-      }
-    },
-    "tenants": {
-      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'super_admin'",
-      "$tenantId": {
-        ".read": "auth != null && root.child('users').child(auth.uid).child('tenantId').val() === $tenantId",
-        ".write": "auth != null && root.child('users').child(auth.uid).child('tenantId').val() === $tenantId"
-      }
-    },
-    "kredit": {
-      ".read": false,
-      ".write": false
-    }
-  }
-}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pusat Toko Perabot Pro - SaaS</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <style>
+        :root { --primary:#0284c7; --success:#16a34a; --danger:#dc2626; --bg:#f8fafc; --card:#fff; --text:#334155; }
+        body { font-family:sans-serif; background:var(--bg); color:var(--text); padding:10px; margin:0; font-size:14px; }
+        header { text-align:center; margin-bottom:12px; padding:10px; background:var(--primary); color:#fff; border-radius:8px; }
+        .card { background:var(--card); padding:12px; border-radius:8px; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,.1); }
+        h2 { color:var(--primary); font-size:1.05rem; margin:0 0 8px; }
+        input { width:100%; padding:9px; margin-bottom:8px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; font-size:13px; }
+        .btn { width:100%; padding:9px; background:var(--primary); color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer; margin-bottom:6px; font-size:13px; }
+        .btn-out { background:#475569; }
+        .btn-link { background:none; color:var(--primary); border:none; cursor:pointer; font-size:12px; text-decoration:underline; padding:4px; }
+        .menu-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:5px; margin-bottom:10px; }
+        .menu-btn { padding:8px; background:#fff; border:1px solid #cbd5e1; border-radius:6px; font-weight:bold; text-align:center; cursor:pointer; color:var(--primary); font-size:12px; }
+        .menu-btn.aktif { background:var(--primary); color:#fff; }
+        .panel { display:none; } .panel.aktif { display:block; }
+        .item-list { font-size:12px; border-bottom:1px solid #e2e8f0; padding:8px; background:#f8fafc; margin-bottom:6px; border-radius:6px; }
+        .loading { text-align:center; color:#64748b; padding:12px; font-style:italic; }
+        .info { font-size:11px; color:#64748b; }
+        .hidden { display:none; }
+        .tab-login { display:flex; gap:5px; margin-bottom:10px; }
+        .tab-btn { flex:1; padding:8px; background:#fff; border:1px solid #cbd5e1; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px; }
+        .tab-btn.aktif { background:var(--primary); color:#fff; }
+    </style>
+</head>
+<body>
+
+    <div id="view-auth">
+        <header><h2 style="color:#fff;border:none;margin:0;">Pusat Toko Perabot Pro ☁️</h2>
+        <p style="margin:2px 0 0;font-size:.75rem;">Sistem Multi-Toko Aman</p></header>
+
+        <div class="tab-login">
+            <button class="tab-btn aktif" onclick="gantiTab('masuk',this)">Masuk</button>
+            <button class="tab-btn" onclick="gantiTab('daftar',this)">Daftar Baru</button>
+        </div>
+
+        <div id="form-masuk" class="card">
+            <h2>Masuk ke Akun</h2>
+            <input type="email" id="masuk-email" placeholder="Email">
+            <input type="password" id="masuk-pass" placeholder="Password">
+            <button class="btn" onclick="prosesMasuk()">Masuk</button>
+            <button class="btn-link" onclick="lupaPassword()">Lupa password? Klik di sini</button>
+            <p class="info" id="masuk-info"></p>
+        </div>
+
+        <div id="form-daftar" class="card hidden">
+            <h2>Daftar Akun Baru</h2>
+            <input type="text" id="daftar-nama" placeholder="Nama Lengkap">
+            <input type="text" id="daftar-toko" placeholder="Nama Toko Anda">
+            <input type="email" id="daftar-email" placeholder="Email">
+            <input type="password" id="daftar-pass" placeholder="Password (min 6 karakter)">
+            <button class="btn" onclick="prosesDaftar()">Daftar Sekarang</button>
+            <p class="info" id="daftar-info"></p>
+        </div>
+    </div>
+
+    <div id="view-toko" class="hidden">
+        <header><h2 id="toko-judul" style="color:#fff;border:none;margin:0;">Toko</h2>
+        <p id="toko-user" style="margin:2px 0 0;font-size:.75rem;"></p></header>
+
+        <div class="menu-grid">
+            <div class="menu-btn aktif" onclick="gantiPanel('kas',this)">Kas</div>
+            <div class="menu-btn" onclick="gantiPanel('produk',this)">Produk</div>
+        </div>
+
+        <div id="panel-kas" class="panel aktif">
+            <div class="card"><h2>Catat Kas</h2>
+                <input type="text" id="ket-kas" placeholder="Keterangan">
+                <input type="number" id="nom-kas" placeholder="Nominal (Rp)">
+                <button class="btn" onclick="simpanKas()">Simpan Kas</button>
+            </div>
+            <div class="card"><h2>Riwayat Kas Toko Ini</h2>
+                <div id="riwayat-kas" class="loading">Memuat...</div>
+            </div>
+        </div>
+
+        <div id="panel-produk" class="panel">
+            <div class="card"><h2>Produk Toko Ini</h2>
+                <div id="riwayat-produk" class="loading">Memuat...</div>
+            </div>
+        </div>
+
+        <button class="btn btn-out" onclick="prosesLogout()">Keluar (Logout)</button>
+    </div>
+
+    <div id="view-pusat" class="hidden">
+        <header><h2 style="color:#fff;border:none;margin:0;">🏢 Dashboard Pusat</h2>
+        <p style="margin:2px 0 0;font-size:.75rem;">Anda login sebagai Super Admin</p></header>
+
+        <div class="card"><h2>Daftar Semua Tenant (Toko)</h2>
+            <div id="daftar-tenant" class="loading">Memuat...</div>
+        </div>
+
+        <button class="btn btn-out" onclick="prosesLogout()">Keluar (Logout)</button>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB9que_uQliALp5mOzhQdI1XWULQjR2px4",
+            authDomain: "toko-perabot.firebaseapp.com",
+            databaseURL: "https://toko-perabot-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "toko-perabot",
+            storageBucket: "toko-perabot.firebasestorage.app",
+            messagingSenderId: "1033085178683",
+            appId: "1:1033085178683:web:c127a5b0a85c0ee05d1d1e"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
+
+        let currentUser = null;
+
+        function dbT(path) {
+            return db.ref('tenants/' + currentUser.tenantId + '/' + path);
+        }
+
+        function gantiTab(tab, el) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('aktif'));
+            el.classList.add('aktif');
+            if (tab === 'masuk') {
+                document.getElementById('form-masuk').classList.remove('hidden');
+                document.getElementById('form-daftar').classList.add('hidden');
+            } else {
+                document.getElementById('form-masuk').classList.add('hidden');
+                document.getElementById('form-daftar').classList.remove('hidden');
+            }
+        }
+
+        function prosesDaftar() {
+            const nama = document.getElementById('daftar-nama').value.trim();
+            const toko = document.getElementById('daftar-toko').value.trim();
+            const email = document.getElementById('daftar-email').value.trim();
+            const pass = document.getElementById('daftar-pass').value.trim();
+            const info = document.getElementById('daftar-info');
+
+            if (!nama || !toko || !email || !pass) { info.innerHTML = '⚠️ Semua field wajib diisi!'; return; }
+            if (pass.length < 6) { info.innerHTML = '⚠️ Password minimal 6 karakter!'; return; }
+
+            info.innerHTML = '⏳ Mendaftarkan...';
+
+            auth.createUserWithEmailAndPassword(email, pass)
+                .then(cred => {
+                    const uid = cred.user.uid;
+                    const tenantId = 'toko_' + uid.substring(0, 8);
+                    return db.ref('users/' + uid).set({
+                        email: email, nama: nama, role: 'owner', tenantId: tenantId
+                    }).then(() => {
+                        return db.ref('tenants/' + tenantId + '/profile').set({
+                            nama: toko, pemilik: nama, dibuat: new Date().toISOString()
+                        });
+                    });
+                })
+                .then(() => {
+                    info.innerHTML = '✅ Berhasil! Silakan masuk dengan akun baru Anda.';
+                    document.getElementById('daftar-nama').value = '';
+                    document.getElementById('daftar-toko').value = '';
+                    document.getElementById('daftar-email').value = '';
+                    document.getElementById('daftar-pass').value = '';
+                    setTimeout(() => {
+                        document.querySelectorAll('.tab-btn')[0].click();
+                    }, 1500);
+                })
+                .catch(err => { info.innerHTML = '❌ ' + err.message; });
+        }
+
+        function prosesMasuk() {
+            const email = document.getElementById('masuk-email').value.trim();
+            const pass = document.getElementById('masuk-pass').value.trim();
+            const info = document.getElementById('masuk-info');
+
+            if (!email || !pass) { info.innerHTML = '⚠️ Isi email & password!'; return; }
+            info.innerHTML = '⏳ Memproses...';
+
+            auth.signInWithEmailAndPassword(email, pass)
+                .catch(err => { info.innerHTML = '❌ ' + err.message; });
+        }
+
+        function lupaPassword() {
+            const email = prompt('Masukkan email Anda untuk reset password:');
+            if (!email) return;
+            auth.sendPasswordResetEmail(email)
+                .then(() => alert('✅ Link reset password sudah dikirim ke email Anda!'))
+                .catch(err => alert('❌ ' + err.message));
+        }
+
+        function prosesLogout() {
+            auth.signOut().then(() => location.reload());
+        }
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                db.ref('users/' + user.uid).once('value').then(snap => {
+                    const data = snap.val();
+                    if (!data) { alert('Data user tidak ditemukan'); auth.signOut(); return; }
+                    currentUser = { uid: user.uid, ...data };
+                    if (data.role === 'super_admin') masukPusat();
+                    else masukToko();
+                });
+            } else {
+                document.getElementById('view-auth').classList.remove('hidden');
+                document.getElementById('view-toko').classList.add('hidden');
+                document.getElementById('view-pusat').classList.add('hidden');
+            }
+        });
+
+        function masukToko() {
+            document.getElementById('view-auth').classList.add('hidden');
+            document.getElementById('view-toko').classList.remove('hidden');
+            db.ref('tenants/' + currentUser.tenantId + '/profile').once('value').then(s => {
+                const p = s.val() || {};
+                document.getElementById('toko-judul').innerText = (p.nama || 'Toko Saya') + " ☁️";
+                document.getElementById('toko-user').innerText = "Login: " + currentUser.nama + " (ID: " + currentUser.tenantId + ")";
+            });
+            initKas();
+            initProduk();
+        }
+
+        function gantiPanel(id, el) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('aktif'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('aktif'));
+            document.getElementById('panel-' + id).classList.add('aktif');
+            el.classList.add('aktif');
+        }
+
+        let dataKas = [];
+        function initKas() {
+            dbT('kas').on('value', snap => {
+                dataKas = [];
+                if (snap.exists()) snap.forEach(c => { const it = c.val(); it.id = c.key; dataKas.push(it); });
+                tampilkanKas();
+            });
+        }
+        function simpanKas() {
+            const ket = document.getElementById('ket-kas').value || 'Tanpa Ket';
+            const nom = document.getElementById('nom-kas').value;
+            if (!nom) { alert("Isi nominal!"); return; }
+            dbT('kas').push({ ket: ket, nominal: Number(nom), tanggal: new Date().toLocaleString('id-ID') });
+            document.getElementById('ket-kas').value = ''; document.getElementById('nom-kas').value = '';
+        }
+        function tampilkanKas() {
+            const r = document.getElementById('riwayat-kas');
+            if (!dataKas.length) { r.innerHTML = 'Belum ada catatan di toko ini.'; return; }
+            r.innerHTML = dataKas.map(i =>
+                '<div class="item-list">' + i.ket + ' - Rp ' + Number(i.nominal).toLocaleString('id-ID') +
+                ' <button style="float:right;background:var(--danger);color:#fff;border:none;padding:2px 6px;border-radius:3px;cursor:pointer;" onclick="hapusKas(\'' + i.id + '\')">Hapus</button></div>'
+            ).join('');
+        }
+        function hapusKas(id) { if (confirm("Hapus?")) dbT('kas/' + id).remove(); }
+
+        function initProduk() {
+            dbT('products').on('value', snap => {
+                const r = document.getElementById('riwayat-produk');
+                if (!snap.exists()) { r.innerHTML = 'Belum ada produk di toko ini.'; return; }
+                let html = '';
+                snap.forEach(c => { const p = c.val();
+                    html += '<div class="item-list"><b>' + p.nama + '</b><br>Harga: Rp ' + Number(p.harga).toLocaleString('id-ID') + ' | Stok: ' + (p.stok || 0) + '</div>';
+                });
+                r.innerHTML = html;
+            });
+        }
+
+        function masukPusat() {
+            document.getElementById('view-auth').classList.add('hidden');
+            document.getElementById('view-pusat').classList.remove('hidden');
+            db.ref('tenants').once('value').then(snap => {
+                const r = document.getElementById('daftar-tenant');
+                if (!snap.exists()) { r.innerHTML = 'Belum ada tenant.'; return; }
+                let html = '', jumlah = 0;
+                snap.forEach(c => {
+                    const t = c.val(); jumlah++;
+                    const prof = t.profile || {};
+                    const nProd = t.products ? Object.keys(t.products).length : 0;
+                    html += '<div class="item-list"><b>' + (prof.nama || c.key) + '</b><br>' +
+                            'ID: <code>' + c.key + '</code><br>' +
+                            'Pemilik: ' + (prof.pemilik || '-') + '<br>Produk: ' + nProd + '</div>';
+                });
+                r.innerHTML = '<div class="info">Total tenant: <b>' + jumlah + '</b></div>' + html;
+            });
+        }
+    </script>
+</body>
+</html>
